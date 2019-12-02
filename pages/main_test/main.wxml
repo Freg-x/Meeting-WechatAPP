@@ -1,0 +1,10 @@
+<!--pages/main_test/main.wxml-->
+
+<view class="cur_day" >
+
+
+<view class="space">
+<view style="transform:rotateY({{degree}}deg);">speed:{{speed}}</view>
+</view>
+
+</view>

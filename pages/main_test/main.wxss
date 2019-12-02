@@ -1,0 +1,41 @@
+/* pages/main_test/main.wxss */
+
+
+.cur_day{
+  /*background-color: gainsboro;*/
+  height: 1000rpx;
+  width: 600rpx;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 150rpx;
+  text-align: center;
+  padding-top:200rpx;
+  
+  
+  
+  perspective-origin: center center;
+  perspective: 350rpx;
+  
+
+  
+}
+
+.cur_day .space{
+  transform-style:preserve-3d;
+  
+ 
+}
+
+.cur_day .space view{
+  margin-left: auto;
+  margin-right: auto;
+  width: 400rpx;
+  height: 160rpx;
+  background-color: black;
+color: white;
+  font-size: 40rpx;
+  
+  transition: 0.4s;
+  
+
+}
