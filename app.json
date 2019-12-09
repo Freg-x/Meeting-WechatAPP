@@ -2,13 +2,43 @@
   "pages": [
     "pages/main_test/main",
     "pages/index/index",
-    "pages/logs/logs"
+    "pages/logs/logs",
+    "pages/GroupManage/GroupManage",
+    "pages/AboutUs/About"
   ],
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "WeChat",
+    "navigationBarTitleText": "Meeting",
     "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "获取信息",
+        "iconPath":"icon_png/shouye.png",
+        "selectedIconPath":"icon_png/s_shouye.png"
+      },
+      {
+        "pagePath": "pages/main_test/main",
+        "text": "主页",
+        "iconPath":"icon_png/rili.png",
+        "selectedIconPath": "icon_png/s_rili.png"
+      },
+      {
+        "pagePath": "pages/GroupManage/GroupManage",
+        "text": "小组管理",
+        "iconPath": "icon_png/xiaoxi.png",
+        "selectedIconPath": "icon_png/s_xiaoxi.png"
+      },
+      {
+        "pagePath":"pages/AboutUs/About",
+        "text":"我们",
+        "iconPath": "icon_png/ceshi.png",
+        "selectedIconPath": "icon_png/s_ceshi.png"
+      }
+    ]
   },
   "style": "v2",
   "sitemapLocation": "sitemap.json"

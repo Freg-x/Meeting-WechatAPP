@@ -1,10 +1,34 @@
 <!--pages/main_test/main.wxml-->
 
-<view class="cur_day" >
+<view class="page">
+
+  <view class="main_canvas" > 
 
 
-<view class="space">
-<view style="transform:rotateY({{degree}}deg);">speed:{{speed}}</view>
-</view>
+    <view class="space">
+
+    <scroll-view
+    wx:for="{{sel_inform}}" 
+    scroll-Y='true'
+    class="day"
+    style = "transform:rotateY({{(cur_day-item.day_index)*60+degree}}deg);left: {{130-(cur_day-item.day_index)*480+degree*8.16}}rpx;top:{{50-(cur_day-item.day_index)*(cur_day-item.day_index)*70-0.83*degree}}rpx;height:{{900+(cur_day-item.day_index)*(cur_day-item.day_index)*150-1.67*degree}}rpx"
+    bindtouchstart="touchstart"
+    bindtouchend="touchend"
+
+    >
+    
+   <view class="event">{{item.day_index}}:{{speed}}</view>
+   <view class="event" style="top:1000rpx">{{item.day_index}}:{{speed}}</view>
+   
+    
+    </scroll-view>
+
+      </view>
+
+  </view>
+
+  
+
+
 
 </view>

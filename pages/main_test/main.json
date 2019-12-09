@@ -1,3 +1,9 @@
 {
-  "usingComponents": {}
+  "usingComponents": {
+  "mp-diaglog":"/weui-miniprogram/dialog/dialog",
+  "mp-icon": "/weui-miniprogram/icon/icon",
+  "mp-loading": "/weui-miniprogram/loading/loading"
+  },
+  "navigationBarTitleText":"Meeting",
+  "disableScroll":true
 }

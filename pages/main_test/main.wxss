@@ -1,41 +1,56 @@
 /* pages/main_test/main.wxss */
-
-
-.cur_day{
-  /*background-color: gainsboro;*/
-  height: 1000rpx;
-  width: 600rpx;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 150rpx;
-  text-align: center;
-  padding-top:200rpx;
-  
-  
-  
-  perspective-origin: center center;
-  perspective: 350rpx;
-  
-
-  
-}
-
-.cur_day .space{
-  transform-style:preserve-3d;
-  
+.page{
  
 }
 
-.cur_day .space view{
+.main_canvas{
+  
+  height:1000rpx;
+  width: 100%;
   margin-left: auto;
   margin-right: auto;
-  width: 400rpx;
-  height: 160rpx;
-  background-color: black;
-color: white;
-  font-size: 40rpx;
-  
-  transition: 0.4s;
+  margin-top: 100rpx;
+  text-align: center;
+  padding-top:20rpx;
+  padding-bottom: 50px;
+  perspective-origin: center center;
+  perspective: 2050rpx;
+
   
 
+  
 }
+
+.main_canvas .space{
+  transform-style:preserve-3d;
+}
+
+.main_canvas .space .day{
+  position: absolute;
+  width:500rpx;
+  background-color:darkgray;
+  color: white;
+  font-size: 40rpx;
+  transition: 0.3s;
+
+
+}
+
+.main_canvas .space .day .event{
+  position: absolute;
+  top:100rpx;
+  left: 50rpx;
+  width:400rpx;
+  height:80rpx;
+  font-size: 30rpx;
+  
+  text-align: center;
+  
+  background-color: black;
+  box-shadow: 10rpx 10rpx 10rpx 5rpx grey;
+}
+
+
+
+
+
