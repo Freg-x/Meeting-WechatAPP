@@ -25,29 +25,121 @@
   transform-style:preserve-3d;
 }
 
+.main_canvas .space .display_dates{
+position: absolute;
+top:-40rpx;
+width: 550rpx;
+display: flex;
+justify-content: space-between;
+left:100rpx;
+}
+.main_canvas .space .display_dates .cur_circle{
+position: absolute;
+top:49rpx;
+height: 38rpx;
+width: 38rpx;
+border-radius: 38rpx;
+background-color: green;
+z-index: -1;
+left:516rpx;
+transition:0.5s;
+}
+
+.main_canvas .space .display_dates .display_date .week_name{
+
+color: grey;
+font-weight: 250;
+font-size: 20rpx;
+
+}
+
+.main_canvas .space .display_dates .display_date .hr{
+margin-top: 8rpx;
+margin-bottom: 8rpx;
+height: 1rpx;
+width: 30rpx;
+background-color: grey;
+
+}
+
+.main_canvas .space .display_dates .display_date .day_name{
+  font-size: 25rpx;
+  
+}
+
+
+
 .main_canvas .space .day{
   position: absolute;
   width:500rpx;
-  background-color:darkgray;
+  background-color:rgb(245,245,245);
   color: white;
   font-size: 40rpx;
   transition: 0.3s;
-
 
 }
 
 .main_canvas .space .day .event{
   position: absolute;
-  top:100rpx;
-  left: 50rpx;
-  width:400rpx;
-  height:80rpx;
+  left: 100rpx;
+  width:350rpx;
+  height:60rpx;
   font-size: 30rpx;
+  font-weight:150;
+  padding: 8rpx 5rpx 0rpx 20rpx;
   
-  text-align: center;
+  text-align: left;
+
   
-  background-color: black;
-  box-shadow: 10rpx 10rpx 10rpx 5rpx grey;
+  
+  background-color:crimson;
+  box-shadow: 6rpx 6rpx 10rpx 5rpx grey;
+}
+
+.main_canvas .space .day .line{
+  position: absolute;
+  width: 1rpx;
+  height:3360rpx;
+  left: 70rpx;
+  top:10rpx;
+  background-color: grey;
+}
+
+.main_canvas .space .day .time_point{
+  position: absolute;
+  left: 0rpx;
+  font-size:30rpx;
+  color: grey;
+}
+
+.main_canvas .space .day .time_point .hour_number{
+position: absolute;
+width: 70rpx;
+text-align: center;
+font-size: 40rpx;
+font-weight: 250;
+}
+
+.main_canvas .space .day .time_point .hour_value{
+  position: absolute;
+  width: 70rpx;
+text-align: center;
+font-size: 20rpx;
+font-weight: 250;
+
+}
+
+.main_canvas .space .add_button{
+  position: absolute;
+  top:1020rpx;
+  left:237rpx;
+  height: 80rpx;
+  width: 300rpx;
+  font-size: 35rpx;
+  font-weight: 350;
+  border-radius: 80rpx;
+
+
 }
 
 

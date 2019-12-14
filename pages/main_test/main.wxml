@@ -7,21 +7,51 @@
 
     <view class="space">
 
+
+
+    <view class = "display_dates">
+      
+      <view wx:for="{{display_dates}}" class="display_date">
+        <view class = "week_name">{{item.week_name}}</view>
+        <view class = "hr"></view>
+        <view class = "day_name" style="color:{{index-3 == cur_day?'white':'black'}}">{{item.day_name}}</view>
+      </view>
+
+      <view class = "cur_circle" style="left:{{57.7*cur_day+169.8}}rpx"></view>
+
+    </view>
+    
+
     <scroll-view
-    wx:for="{{sel_inform}}" 
+    wx:for="{{inform_card}}"
+    wx:for-item='day' 
     scroll-Y='true'
     class="day"
-    style = "transform:rotateY({{(cur_day-item.day_index)*60+degree}}deg);left: {{130-(cur_day-item.day_index)*480+degree*8.16}}rpx;top:{{50-(cur_day-item.day_index)*(cur_day-item.day_index)*70-0.83*degree}}rpx;height:{{900+(cur_day-item.day_index)*(cur_day-item.day_index)*150-1.67*degree}}rpx"
+    style = "transform:rotateY({{(cur_day-day.day_index)*60+degree}}deg);left: {{130-(cur_day-day.day_index)*480+degree*8.16}}rpx;top:{{80-(cur_day-day.day_index)*(cur_day-day.day_index)*70-0.83*degree}}rpx;height:{{900+(cur_day-day.day_index)*(cur_day-day.day_index)*150-1.67*degree}}rpx"
     bindtouchstart="touchstart"
     bindtouchend="touchend"
-
+    lower-threshold="2000rpx"
+    scroll-into-view='day{{day.day_index}}{{cur_hour-2}}'
+    scroll-with-animation="true"
     >
-    
-   <view class="event">{{item.day_index}}:{{speed}}</view>
-   <view class="event" style="top:1000rpx">{{item.day_index}}:{{speed}}</view>
+   
+  <view class="time_point" wx:for="{{hours}}" >
+  <view class="hour_number" style="top:{{140*index}}rpx" id="day{{day.day_index}}{{index}}">{{item.number}}</view>
+  <view class="hour_value" style="top:{{140*index+55}}rpx">{{item.value}}</view>
+  </view>
+
+  <view class="line"></view>
+
+   <view class="event">java开会</view>
+   <view class="event" style="top:70rpx" >java开会</view>
+   <view class="event" style="top:1000rpx" id="test">{{day.day_index}}:{{test}}</view>
    
     
     </scroll-view>
+
+
+    <button class="add_button" type="primary" s>添加事件</button>
+    
 
       </view>
 

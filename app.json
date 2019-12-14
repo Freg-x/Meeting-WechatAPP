@@ -14,12 +14,7 @@
   },
   "tabBar": {
     "list": [
-      {
-        "pagePath": "pages/index/index",
-        "text": "获取信息",
-        "iconPath":"icon_png/shouye.png",
-        "selectedIconPath":"icon_png/s_shouye.png"
-      },
+     
       {
         "pagePath": "pages/main_test/main",
         "text": "主页",
