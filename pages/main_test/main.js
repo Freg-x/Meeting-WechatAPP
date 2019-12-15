@@ -28,7 +28,7 @@ Page({
     ],
 
     color_table:[
-      'grey','green','dodgerblue','gold','crimson'
+      'grey','green','dodgerblue','darkorange','crimson'
     ],
 
     inform_card:[
@@ -48,28 +48,41 @@ Page({
         day_index: 0,
         event:[
           {
-            name : '上午写代码',
+            name : 'English',
             start_time:0,
-            end_time:660,
+            end_time:120,
             display:true,
             priority:4
             
           },
           {
-            name : '中午写代码',
-            start_time: 720,
-            end_time: 840,
+            name: '睡觉',
+            start_time: 120,
+            end_time: 540,
+            display: true,
+            priority: 3
+
+          },
+          {
+            name : '计算机图形学',
+            start_time: 600,
+            end_time: 720,
             display: true,
             priority:2
-            
-
+          },
+          {
+            name: '吃饭',
+            start_time: 740,
+            end_time: 780,
+            display: true,
+            priority: 1
           },
           {
             name: '晚上写代码',
             start_time: 1080,
             end_time: 1380,
             display: true,
-            priority:1
+            priority:3
           }
         ],
       
@@ -77,7 +90,7 @@ Page({
       {
         day_index: 1
        
-      },
+      },   
       {
         day_index: 2
         
@@ -119,15 +132,30 @@ Page({
     //this.data.inform_card[day_index].event[event_index].display
 
     var key = 'inform_card['+day_index+'].event['+event_index+'].display';
-
-    console.log(key);
-
     this.setData({
       [key]: !this.data.inform_card[day_index].event[event_index].display
 
     });
 
 
+  },
+
+  moveToCurrent:function(){
+    console.log("tap");
+
+    var p_this = this;
+    this.setData(
+      {
+        cur_day:0,
+      }
+    );
+    setTimeout(function(){
+      p_this.setData(
+        {
+          cur_hour: new Date().getHours()
+        }
+      );
+    },400);
   },
 
 

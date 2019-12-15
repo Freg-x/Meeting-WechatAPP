@@ -44,15 +44,19 @@
 
 
     <view class="event_point" wx:for="{{day.event}}" style="top:{{2.33*item.start_time+55}}rpx;background-color:{{color_table[item.priority]}}"></view>
-    <view class="event" wx:for="{{day.event}}" style="top:{{2.33*item.start_time+30}}rpx;background-color:{{color_table[item.priority]}}" bindtap="handleEventTap" id="event{{day.day_index}}{{index}}">{{item.name}}</view>
-    <view class="event" wx:for="{{day.event}}" style="top:{{2.33*item.start_time+96}}rpx;opacity:{{item.display?0.2:0}};height:{{(item.end_time-item.start_time)*2.33-66}}rpx;background-color:{{color_table[item.priority]}}"></view>
+
+    <view class="event {{item.display?'change_shadow':'event_shadow'}}" wx:for="{{day.event}}" style="top:{{2.33*item.start_time+30}}rpx;background-color:{{color_table[item.priority]}}" bindtap="handleEventTap" id="event{{day.day_index}}{{index}}" hover-class="event_tap">{{item.name}}</view>
+
+    <view class="line" wx:for="{{day.event}}" style="top:{{2.33*item.start_time+66}}rpx; height:{{item.display?((item.end_time-item.start_time)*2.33-36):0}}rpx; background-color:{{color_table[item.priority]}}"></view>
+
+    <view class="event event_shadow" wx:for="{{day.event}}" style="top:{{2.33*item.start_time+96}}rpx; opacity:{{item.display?0.2:0}}; height:{{item.display?((item.end_time-item.start_time)*2.33-69):0}}rpx; background-color:{{color_table[item.priority]}}"></view>
 
 
     
     </scroll-view>
 
 
-    <button class="add_button" type="primary" >添加事件</button>
+    <button class="add_button" type="primary" bindtap="moveToCurrent">添加事件</button>
     
 
       </view>
