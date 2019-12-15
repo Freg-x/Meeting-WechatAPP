@@ -35,22 +35,24 @@
     scroll-with-animation="true"
     >
    
-  <view class="time_point" wx:for="{{hours}}" >
-  <view class="hour_number" style="top:{{140*index}}rpx" id="day{{day.day_index}}{{index}}">{{item.number}}</view>
-  <view class="hour_value" style="top:{{140*index+55}}rpx">{{item.value}}</view>
-  </view>
+    <view class="time_point" wx:for="{{hours}}" >
+      <view class="hour_number" style="top:{{140*index}}rpx" id="day{{day.day_index}}{{index}}">{{item.number}}</view>
+      <view class="hour_value" style="top:{{140*index+55}}rpx">{{item.value}}</view>
+    </view>
+    <i class="iconfont icon-icon-test time_guide" style="top:{{2.33*cur_min-10}}rpx"></i>
+    <view class="line"></view>
 
-  <view class="line"></view>
 
-   <view class="event">java开会</view>
-   <view class="event" style="top:70rpx" >java开会</view>
-   <view class="event" style="top:1000rpx" id="test">{{day.day_index}}:{{test}}</view>
-   
+    <view class="event_point" wx:for="{{day.event}}" style="top:{{2.33*item.start_time+55}}rpx;background-color:{{color_table[item.priority]}}"></view>
+    <view class="event" wx:for="{{day.event}}" style="top:{{2.33*item.start_time+30}}rpx;background-color:{{color_table[item.priority]}}" bindtap="handleEventTap" id="event{{day.day_index}}{{index}}">{{item.name}}</view>
+    <view class="event" wx:for="{{day.event}}" style="top:{{2.33*item.start_time+96}}rpx;opacity:{{item.display?0.2:0}};height:{{(item.end_time-item.start_time)*2.33-66}}rpx;background-color:{{color_table[item.priority]}}"></view>
+
+
     
     </scroll-view>
 
 
-    <button class="add_button" type="primary" s>添加事件</button>
+    <button class="add_button" type="primary" >添加事件</button>
     
 
       </view>

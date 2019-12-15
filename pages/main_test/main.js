@@ -12,18 +12,23 @@ Page({
     degree:0,
     cur_day:0,
     cur_hour:new Date().getHours(),
-    week_name:[
-      '日','一','二','三','四','五','六'
+    cur_min:new Date().getHours()*60+new Date().getMinutes(),
+    week_name: [
+      '日', '一', '二', '三', '四', '五', '六'
     ],
     display_dates:[],
-    hours: [{ number: 1, value: 'AM' }, { number: 2, value: 'AM' }, { number: 3, value: 'AM' },
+    hours: [{ number: 12, value: 'PM' },{ number: 1, value: 'AM' }, { number: 2, value: 'AM' }, { number: 3, value: 'AM' },
       { number: 4, value: 'AM' }, { number: 5, value: 'AM' }, { number: 6, value: 'AM' }, { number: 7, value: 'AM' },
       { number: 8, value: 'AM' }, { number: 9, value: 'AM' }, { number: 10, value: 'AM' }, { number: 11, value: 'AM' },
       { number: 12, value: 'AM' }, { number: 1, value: 'PM' }, { number: 2, value: 'PM' }, { number: 3, value: 'PM' },
       { number: 4, value: 'PM' }, { number: 5, value: 'PM' }, { number: 6, value: 'PM' }, { number: 7, value: 'PM' },
       { number: 8, value: 'PM' }, { number: 9, value: 'PM' }, { number: 10, value: 'PM' }, { number: 11, value: 'PM' },
-      { number: 12, value: 'PM' }
+      
 
+    ],
+
+    color_table:[
+      'grey','green','dodgerblue','gold','crimson'
     ],
 
     inform_card:[
@@ -43,13 +48,28 @@ Page({
         day_index: 0,
         event:[
           {
-            name : '上午写作业'
+            name : '上午写代码',
+            start_time:0,
+            end_time:660,
+            display:true,
+            priority:4
+            
           },
           {
-            name : '中午写作业'
+            name : '中午写代码',
+            start_time: 720,
+            end_time: 840,
+            display: true,
+            priority:2
+            
+
           },
           {
-            name: '晚上写作业'
+            name: '晚上写代码',
+            start_time: 1080,
+            end_time: 1380,
+            display: true,
+            priority:1
           }
         ],
       
@@ -88,6 +108,29 @@ Page({
 
 
   },
+  handleEventTap:function(e){
+    
+    var id = e.target.id;
+
+    var day_index = parseInt(id.charAt(5))+3;
+    var event_index = parseInt(id.slice(6,id.length));
+
+    
+    //this.data.inform_card[day_index].event[event_index].display
+
+    var key = 'inform_card['+day_index+'].event['+event_index+'].display';
+
+    console.log(key);
+
+    this.setData({
+      [key]: !this.data.inform_card[day_index].event[event_index].display
+
+    });
+
+
+  },
+
+
 
   touchstart:function(e){
     
@@ -136,7 +179,10 @@ Page({
     }
 
     this.setData({
-      display_dates :tmp
+      display_dates :tmp,
+      cur_day:0,
+      cur_hour: new Date().getHours(),
+      cur_min: new Date().getHours() * 60 + new Date().getMinutes()
     });
 
 

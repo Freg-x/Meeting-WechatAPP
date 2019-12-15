@@ -72,11 +72,21 @@ background-color: grey;
 .main_canvas .space .day{
   position: absolute;
   width:500rpx;
-  background-color:rgb(245,245,245);
+  background-color:rgb(250,250,250);
   color: white;
   font-size: 40rpx;
-  transition: 0.3s;
+  transition: 0.25s;
+  
 
+}
+
+.main_canvas .space .day .event_point{
+  position: absolute;
+  width: 14rpx;
+  height: 14rpx;
+  border-radius:14rpx;
+  left:65rpx;
+  background-color:crimson;
 }
 
 .main_canvas .space .day .event{
@@ -87,13 +97,13 @@ background-color: grey;
   font-size: 30rpx;
   font-weight:150;
   padding: 8rpx 5rpx 0rpx 20rpx;
-  
+  transition:0.3s;
   text-align: left;
 
   
   
   background-color:crimson;
-  box-shadow: 6rpx 6rpx 10rpx 5rpx grey;
+  box-shadow: 6rpx 6rpx 10rpx 5rpx rgb(150,150,150);
 }
 
 .main_canvas .space .day .line{
@@ -103,6 +113,14 @@ background-color: grey;
   left: 70rpx;
   top:10rpx;
   background-color: grey;
+}
+
+.main_canvas .space .day .time_guide{
+  position: absolute;
+  font-size: 50rpx;
+  left: 47rpx;
+  color:red;
+  
 }
 
 .main_canvas .space .day .time_point{
@@ -142,7 +160,9 @@ font-weight: 250;
 
 }
 
-
+.hide{
+  display: none;
+}
 
 
 

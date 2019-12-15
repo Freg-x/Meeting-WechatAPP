@@ -5,6 +5,32 @@ Page({
    * 页面的初始数据
    */
   data: {
+    
+    my_create:[
+      {
+        id: 1234,
+        name:'JAVA EE'
+      },
+      {
+        id:2345,
+        name:'JAVA SE'
+      }
+
+    ],
+    my_join:[
+      {
+        id:1234,
+        name:'hello'
+      },
+      {
+        id:1234,
+        name:'world'
+      }
+    ]
+
+    
+
+
 
   },
 
