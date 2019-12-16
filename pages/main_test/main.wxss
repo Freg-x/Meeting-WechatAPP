@@ -3,6 +3,20 @@
  
 }
 
+.change_group{
+  position: absolute;
+  top:0rpx;
+  font-size: 25rpx;
+  left: 228rpx;
+  border: 2rpx solid grey;
+  height: 40rpx;
+  width: 300rpx;
+  text-align: center;
+  padding-top: 3rpx;
+  border-radius: 60rpx;
+  color:grey;
+}
+
 .main_canvas{
   
   height:1000rpx;
@@ -125,6 +139,7 @@ background-color: grey;
 }
 
 .main_canvas .space .day .time_point .hour_number{
+color: black;  
 position: absolute;
 width: 70rpx;
 text-align: center;
@@ -144,7 +159,7 @@ font-weight: 250;
 .main_canvas .space .add_button{
   position: absolute;
   top:1035rpx;
-  left:237rpx;
+  left:230rpx;
   height: 80rpx;
   width: 300rpx;
   font-size: 35rpx;
@@ -153,6 +168,20 @@ font-weight: 250;
 
 
 }
+
+.main_canvas .space .back_button{
+  position:absolute;
+  top:1009rpx;
+  left:570rpx;
+  font-size: 80rpx;
+  
+}
+
+.main_canvas .space .edit_box{
+  height: 500rpx;
+  width:500rpx;
+}
+
 
 .hide{
   display: none;

@@ -26,12 +26,12 @@ Page({
       
 
     ],
-
+    buttons: [{ text: '取消' }, { text: '确定' }],
     color_table:[
       'grey','green','dodgerblue','darkorange','crimson'
     ],
 
-    inform_card:[
+    other_inform_card:[
       {
         day_index: -3
       
@@ -64,21 +64,21 @@ Page({
 
           },
           {
-            name : '计算机图形学',
+            name : '别人计算机图形学',
             start_time: 600,
             end_time: 720,
             display: true,
             priority:2
           },
           {
-            name: '吃饭',
+            name: '别人吃饭',
             start_time: 740,
             end_time: 780,
             display: true,
             priority: 1
           },
           {
-            name: '晚上写代码',
+            name: '晚上别人写代码',
             start_time: 1080,
             end_time: 1380,
             display: true,
@@ -108,19 +108,126 @@ Page({
         day_index: 6
       },
     ],
+    inform_card: [
+      {
+        day_index: -3
 
-    touch_start_x:0
+      },
+      {
+        day_index: -2
 
+      },
+      {
+        day_index: -1
 
+      },
+      {
+        day_index: 0,
+        event: [
+          {
+            name: 'English',
+            start_time: 0,
+            end_time: 120,
+            display: true,
+            priority: 4
 
+          },
+          {
+            name: '睡觉',
+            start_time: 120,
+            end_time: 540,
+            display: true,
+            priority: 3
 
+          },
+          {
+            name: '计算机图形学',
+            start_time: 600,
+            end_time: 720,
+            display: true,
+            priority: 2
+          },
+          {
+            name: '吃饭',
+            start_time: 740,
+            end_time: 780,
+            display: true,
+            priority: 1
+          },
+          {
+            name: '晚上写代码',
+            start_time: 1080,
+            end_time: 1380,
+            display: true,
+            priority: 3
+          }
+        ],
 
+      },
+      {
+        day_index: 1
+
+      },
+      {
+        day_index: 2
+
+      },
+      {
+        day_index: 3
+      },
+      {
+        day_index: 4
+      },
+      {
+        day_index: 5
+      },
+      {
+        day_index: 6
+      },
+    ],
+
+    touch_start_x:0,
+
+    back_button_color:'rgb(200,200,200)',
+    edit_show:false,
+
+    groups:[
+      {
+        id:-1,
+        name:'(在此切换组信息)'
+      },
+      {
+        id:123,
+        name:'JAVA小组'
+      },
+      {
+        id:234,
+        name:'软工小组'
+      }
+    ],
+
+    cur_group:0,
+
+    cur_group_members:[
+      {
+        id:-1,
+        name:'default'
+      },
+      {
+        id:'1',
+        name:'freakx'
+      },{
+        id:'2',
+        name:'freakv'
+      }
+    ]
 
 
 
 
 
   },
+
   handleEventTap:function(e){
     
     var id = e.target.id;
@@ -140,23 +247,35 @@ Page({
 
   },
 
+  editEvent:function(){
+    this.setData({
+      edit_show:true
+    });
+    
+  },
+
   moveToCurrent:function(){
-    console.log("tap");
 
     var p_this = this;
     this.setData(
       {
         cur_day:0,
+        back_button_color:'black'
       }
     );
     setTimeout(function(){
       p_this.setData(
         {
-          cur_hour: new Date().getHours()
+          cur_hour: new Date().getHours(),
+          back_button_color: 'grey'
         }
       );
     },400);
+
+    
   },
+
+
 
 
 
