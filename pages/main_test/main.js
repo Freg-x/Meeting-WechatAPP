@@ -9,6 +9,9 @@ Page({
    */
 
   data: {
+    //页面有两种模式，自己模式和他人模式
+    //其中0代表自己模式，1代表他人模式
+    cur_mode:0,
     degree:0,
     cur_day:0,
     cur_hour:new Date().getHours(),
@@ -16,7 +19,10 @@ Page({
     week_name: [
       '日', '一', '二', '三', '四', '五', '六'
     ],
+
+    //上面十天的信息，前端直接可以运算出来
     display_dates:[],
+
     hours: [{ number: 12, value: 'PM' },{ number: 1, value: 'AM' }, { number: 2, value: 'AM' }, { number: 3, value: 'AM' },
       { number: 4, value: 'AM' }, { number: 5, value: 'AM' }, { number: 6, value: 'AM' }, { number: 7, value: 'AM' },
       { number: 8, value: 'AM' }, { number: 9, value: 'AM' }, { number: 10, value: 'AM' }, { number: 11, value: 'AM' },
@@ -26,10 +32,15 @@ Page({
       
 
     ],
-    buttons: [{ text: '取消' }, { text: '确定' }],
+
+    buttons: [{ text: '关闭' }],
+
+    //事件颜色的选项
     color_table:[
       'grey','green','dodgerblue','darkorange','crimson'
     ],
+
+    //其他人的信息卡片
 
     other_inform_card:[
       {
@@ -60,7 +71,7 @@ Page({
             start_time: 120,
             end_time: 540,
             display: true,
-            priority: 3
+            priority: 4
 
           },
           {
@@ -68,14 +79,14 @@ Page({
             start_time: 600,
             end_time: 720,
             display: true,
-            priority:2
+            priority:3
           },
           {
             name: '别人吃饭',
             start_time: 740,
             end_time: 780,
             display: true,
-            priority: 1
+            priority: 4
           },
           {
             name: '晚上别人写代码',
@@ -108,6 +119,8 @@ Page({
         day_index: 6
       },
     ],
+
+    //我自己的信息卡片
     inform_card: [
       {
         day_index: -3
@@ -186,11 +199,15 @@ Page({
       },
     ],
 
+    //在这里存储上一次滑动事件的起点
     touch_start_x:0,
-
+    //控制回到起点按钮的颜色
     back_button_color:'rgb(200,200,200)',
-    edit_show:false,
+    //控制信息框的显示
+    edit_show:true,
 
+
+    //组的部分信息
     groups:[
       {
         id:-1,
@@ -206,12 +223,22 @@ Page({
       }
     ],
 
+    //你当前选择的组
     cur_group:0,
 
+    //你是不是当前选择组的组长
+
+    is_leader:0,
+
+    //你正在查看的成员
+
+    cur_member:0,
+
+    //你当前选择组的成员
     cur_group_members:[
       {
         id:-1,
-        name:'default'
+        name:'我'
       },
       {
         id:'1',
@@ -228,6 +255,40 @@ Page({
 
   },
 
+  bindGroupChange(e){
+    /**在这里需要发送网络请求，获取当前组的成员信息 */
+    /**成功之后进行下面的样式切换 */
+
+    var sel_index = e.detail.value;
+
+    if(sel_index == 0){
+
+      var group0_name = "groups[0].name";
+
+      this.setData({
+        cur_mode:0,
+        cur_group:0,
+        'groups[0].name':'(在此切换组信息)'
+        
+      })
+    }else{
+      var group0_name = "groups[0].name";
+
+      this.setData({
+        cur_mode:1,
+        cur_group:sel_index,
+        'groups[0].name': '我'
+      });
+
+    }
+    
+
+   
+
+
+
+  },
+
   handleEventTap:function(e){
     
     var id = e.target.id;
@@ -237,15 +298,35 @@ Page({
 
     
     //this.data.inform_card[day_index].event[event_index].display
-
+    if(this.data.cur_mode == 0){
     var key = 'inform_card['+day_index+'].event['+event_index+'].display';
     this.setData({
       [key]: !this.data.inform_card[day_index].event[event_index].display
 
     });
+    }else{
+      var key = 'other_inform_card[' + day_index + '].event[' + event_index + '].display';
+      this.setData({
+        [key]: !this.data.other_inform_card[day_index].event[event_index].display
+
+      });
+
+    }
 
 
   },
+
+  handleEventLongTap(){
+
+    if(this.data.cur_mode == 0){
+      this.editEvent();
+
+    }else{
+
+    }
+
+  },
+
 
   editEvent:function(){
     this.setData({
@@ -275,7 +356,13 @@ Page({
     
   },
 
-
+  handleDialogTap:function(e){
+    this.setData(
+      {
+        edit_show:false
+      }
+    );
+  },
 
 
 
@@ -299,7 +386,18 @@ Page({
 
   },
 
+  initData(){
+
+    /**在这里发送第一次初始化的网络请求 */
+
+  },
+
   initDisplay:function(){
+
+
+
+
+
     var tmp = [];
     for(var i=0;i<10;i++){
       var date = new Date();
@@ -329,9 +427,10 @@ Page({
       display_dates :tmp,
       cur_day:0,
       cur_hour: new Date().getHours(),
-      cur_min: new Date().getHours() * 60 + new Date().getMinutes()
+      cur_min: new Date().getHours() * 60 + new Date().getMinutes(),
+      cur_mode:this.data.cur_group==0?0:1,
+      'groups[0].name':this.data.cur_group==0?'在此切换组信息':'我'
     });
-
 
   },
 

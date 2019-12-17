@@ -1,7 +1,7 @@
 <!--pages/main_test/main.wxml-->
 
-<view class="page">
-  <picker bindchange="bindPickerChange" value="{{cur_group}}" range="{{groups}}" range-key="name">
+<view class="page"  bindtouchstart="touchstart" bindtouchend="touchend">
+  <picker bindchange="bindGroupChange" value="{{cur_group}}" range="{{groups}}" range-key="name">
     <view class="change_group">
      {{groups[cur_group].name}}
     </view>
@@ -27,13 +27,11 @@
     
 
     <scroll-view
-    wx:for="{{inform_card}}"
+    wx:for="{{cur_mode==0?inform_card:other_inform_card}}"
     wx:for-item='day' 
     scroll-Y='true'
     class="day"
     style = "transform:rotateY({{(cur_day-day.day_index)*60+degree}}deg);left: {{130-(cur_day-day.day_index)*480+degree*8.16}}rpx;top:{{80-(cur_day-day.day_index)*(cur_day-day.day_index)*70-0.83*degree}}rpx;height:{{900+(cur_day-day.day_index)*(cur_day-day.day_index)*150-1.67*degree}}rpx"
-    bindtouchstart="touchstart"
-    bindtouchend="touchend"
     lower-threshold="2000rpx"
     scroll-into-view='day{{day.day_index}}{{cur_hour-2<=0?cur_hour:cur_hour-1}}'
     scroll-with-animation="true"
@@ -49,7 +47,7 @@
 
     <view class="event_point" wx:for="{{day.event}}" style="top:{{2.33*item.start_time+55}}rpx;background-color:{{color_table[item.priority]}}"></view>
 
-    <view class="event {{item.display?'change_shadow':'event_shadow'}}" wx:for="{{day.event}}" style="top:{{2.33*item.start_time+30}}rpx;background-color:{{color_table[item.priority]}}" bindtap="handleEventTap" id="event{{day.day_index}}{{index}}" hover-class="event_tap" bindlongtap="editEvent">{{item.name}} </view>
+    <view class="event {{item.display?'change_shadow':'event_shadow'}}" wx:for="{{day.event}}" style="top:{{2.33*item.start_time+30}}rpx;background-color:{{color_table[item.priority]}}" bindtap="handleEventTap" id="event{{day.day_index}}{{index}}" hover-class="event_tap" bindlongpress="handleEventLongTap">{{item.name}} </view>
 
     <view class="line" wx:for="{{day.event}}" style="top:{{2.33*item.start_time+66}}rpx; height:{{item.display?((item.end_time-item.start_time)*2.33-36):0}}rpx; background-color:{{color_table[item.priority]}}"></view>
 
@@ -62,8 +60,21 @@
 
 
 
-    <button class="add_button" type="primary" bindtap="editEvent">添加事件</button>
-    
+    <button class="add_button" type="primary" bindtap="editEvent" wx:if="{{!cur_mode}}">添加事件</button>
+
+   <view class="group_button_box" wx:else>
+
+   <picker bindchange="bindGroupMemberChange" value="{{cur_member}}" range="{{cur_group_members}}" range-key="name">
+    <view class="change_member">
+     当前成员：{{cur_group_members[cur_member].name}}
+    </view>
+     </picker>
+  <button class="add_group_button" type="{{is_leader?'primary':'warn'}}" bindtap="groupButtonTap" >{{is_leader?'添加组事件':'勿扰模式'}}</button>
+
+   </view>
+  
+
+
     <i class="iconfont icon-dingwei back_button" bindtap="moveToCurrent" style="color:{{back_button_color}}"></i>
 
 
@@ -77,8 +88,11 @@
 
   </view>
 
-  <mp-dialog title="编辑事件" show="{{edit_show}}" mask="true" mask-closable="true" buttons="{{buttons}}">
+  <mp-dialog title="编辑事件" show="{{edit_show}}" mask="true" mask-closable="true" buttons="{{buttons}}" bindbuttontap="handleDialogTap">
         <view>关于事件的修改信息在此</view>
+        <form>
+        
+        </form>
     </mp-dialog>
 
 

@@ -1,2 +1,6 @@
 <!--pages/GroupManage/GroupManage.wxml-->
-<view>施工中</view>
+<button open-type="share">转发</button>
+<mp-dialog title="加入组" show="{{join_id==-1?false:true}}" mask="true" mask-closable="true">
+        <view>是否加入javaee小组？</view>
+        <view>隐私模式</view>
+    </mp-dialog>

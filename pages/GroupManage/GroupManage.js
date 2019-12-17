@@ -26,10 +26,11 @@ Page({
         id:1234,
         name:'world'
       }
-    ]
+    ],
 
     
-
+    user_id:"111",
+    join_id:-1
 
 
   },
@@ -38,6 +39,19 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+
+    wx.showShareMenu({
+      withShareTicket:true
+    });
+
+    var p_join_id = options.join_id?options.join_id:-1;
+
+    this.setData(
+      {
+        join_id:p_join_id
+      }
+    );
+
 
   },
 
@@ -87,6 +101,19 @@ Page({
    * 用户点击右上角分享
    */
   onShareAppMessage: function () {
+    let p_this = this;
+    var groupId= 123;
+    return{
+      title:'邀请你加入java群聊',
+      path:'/pages/GroupManage/GroupManage?join_id=${p_this.data.user_id}',
+      success:function(res){
+        var shareTicket = (res.shareTickets && res.shareTickets[0]) || '';
+        console.log(shareTicket);
+      }
+
+    }
+  
 
   }
+  
 })

@@ -169,10 +169,40 @@ font-weight: 250;
 
 }
 
+.main_canvas .space .change_member{
+  position: absolute;
+  top:1000rpx;
+  font-size: 25rpx;
+  left: 228rpx;
+  border: 2rpx solid grey;
+  height: 40rpx;
+  width: 300rpx;
+  text-align: center;
+  padding-top: 3rpx;
+  border-radius: 60rpx;
+  color:grey;
+}
+
+.main_canvas .space .add_group_button{
+  position: absolute;
+  top:1065rpx;
+  left:260rpx;
+  width: 250rpx;
+  font-size: 30rpx;
+  font-weight: 350;
+  border-radius: 80rpx;
+
+}
+
+
+
+
+
+
 .main_canvas .space .back_button{
   position:absolute;
   top:1009rpx;
-  left:570rpx;
+  left:590rpx;
   font-size: 80rpx;
   
 }
