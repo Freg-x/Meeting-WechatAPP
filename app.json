@@ -2,6 +2,7 @@
   "pages": [
     "pages/main_test/main",
     "pages/GroupManage/GroupManage",
+   
     
     "pages/index/index",
     "pages/logs/logs",

@@ -9,22 +9,30 @@ Page({
     my_create:[
       {
         id: 1234,
-        name:'JAVA EE'
+        name:'JAVA EE',
+        memberCount:3,
+        eventCount:5
       },
       {
         id:2345,
-        name:'JAVA SE'
+        name:'JAVA SE',
+        memberCount: 3,
+        eventCount: 10
       }
 
     ],
     my_join:[
       {
         id:1234,
-        name:'hello'
+        name:'hello',
+        memberCount: 3,
+        eventCount: 1
       },
       {
         id:1234,
-        name:'world'
+        name:'world',
+        memberCount: 3,
+        eventCount: 1
       }
     ],
 

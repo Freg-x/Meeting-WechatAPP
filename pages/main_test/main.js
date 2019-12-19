@@ -26,6 +26,10 @@ Page({
     cur_month:new Date().getMonth(),
     cur_date:new Date().getDate(),
 
+    six_after_year:'',
+    six_after_month:'',
+    six_after_date:'',
+
 
     //上面十天的信息，前端直接可以运算出来
     display_dates:[],
@@ -139,100 +143,17 @@ Page({
       },
       {
         day_index: -1,
-        event:[{
-        name: '晚上写代码',
-        start_time: 1080,
-        end_time: 1380,
-        display: true,
-        priority: 3,
-
-      }]
+        event:[]
 
       },
       {
         day_index: 0,
-        event: [
-          {
-            name: 'English',
-            start_time: 0,
-            end_time: 120,
-            display: true,
-            priority: 4
-
-          },
-          {
-            name: '睡觉',
-            start_time: 120,
-            end_time: 540,
-            display: true,
-            priority: 3
-
-          },
-          {
-            name: '计算机图形学',
-            start_time: 600,
-            end_time: 720,
-            display: true,
-            priority: 2
-          },
-          {
-            name: '吃饭',
-            start_time: 740,
-            end_time: 780,
-            display: true,
-            priority: 1
-          },
-          {
-            name: '晚上写代码',
-            start_time: 1080,
-            end_time: 1380,
-            display: true,
-            priority: 3
-          }
-        ],
+        event: [],
 
       },
       {
         day_index: 1,
-        event: [
-          {
-            name: 'English',
-            start_time: 0,
-            end_time: 120,
-            display: true,
-            priority: 4
-
-          },
-          {
-            name: '睡觉',
-            start_time: 120,
-            end_time: 540,
-            display: true,
-            priority: 3
-
-          },
-          {
-            name: '计算机图形学',
-            start_time: 600,
-            end_time: 720,
-            display: true,
-            priority: 2
-          },
-          {
-            name: '吃饭',
-            start_time: 740,
-            end_time: 780,
-            display: true,
-            priority: 1
-          },
-          {
-            name: '晚上写代码',
-            start_time: 1080,
-            end_time: 1380,
-            display: true,
-            priority: 3
-          }
-        ]
+        event: []
       },
       {
         day_index: 2
@@ -257,7 +178,7 @@ Page({
     //控制回到起点按钮的颜色
     back_button_color:'rgb(200,200,200)',
     //控制信息框的显示
-    edit_show:true,
+    edit_show:false,
 
 
     //组的部分信息
@@ -302,16 +223,19 @@ Page({
       }
     ],
 
+    my_calendar_id:0,
     cur_event_name:'',
     cur_event_date:'',
     cur_event_start:'',
     cur_event_end:'',
     cur_event_prior:0,
-    cur_event_repeat:'',
+    cur_event_repeat:0,
     cur_event_detail:'',
     prior_sel:[
       { name: '1', checked: false }, { name: '2', checked: false }, { name: '3', checked: false }, { name: '4', checked: false}
-    ]
+    ],
+    submit_error:false,
+    submit_error_msg:""
 
 
 
@@ -429,13 +353,112 @@ Page({
   },
 
   handleRepeatChange:function(e){
+
+    var result;
+    
+    if(e.detail.value==false)result=0;
+    else result=1;
     this.setData(
       {
-        cur_event_repeat:e.detail.value
+        cur_event_repeat:result
       }
-    )
+    );
   },
 
+  handleDetailInput:function(e){
+    this.setData(
+      {
+        cur_event_detail: e.detail.value
+      }
+    );
+  },
+
+  getDistanceByDate(future_date){
+
+    var tmp = new Date();
+    for(var i = -3;i < 7;i++){
+
+    if(tmp.getDate()==future_date){return i;break;}
+    else tmp.setDate(tmp.getDate() + 1);
+
+    }
+
+  },
+
+  bind2Stamp:function(date,time){
+    
+    date = date.replace(/-/g,'/');
+    time=time+':00';
+
+    return date+' '+time;
+  },
+
+  
+  handleSubmitEvent:function(){
+
+    var start_hour = this.data.cur_event_start.slice(0,2);
+    var start_minute = this.data.cur_event_start.slice(3,5);
+    var start_cal = parseInt(start_hour)*60 + parseInt(start_minute);
+
+    var end_hour = this.data.cur_event_end.slice(0, 2);
+    var end_minute = this.data.cur_event_end.slice(3, 5);
+    var end_cal = parseInt(end_hour) * 60 + parseInt(end_minute);
+
+    var p_this = this;
+
+    if(this.data.cur_event_name == ""){
+      this.setData({
+        submit_error:true,
+        submit_error_msg:"事件名称不能为空"
+      });
+    }else if(end_cal - start_cal < 30){
+      this.setData({
+        submit_error: true,
+        submit_error_msg: "事件长度至少为30分钟"
+      });
+    }else if(this.data.cur_event_prior == 0){
+      this.setData({
+        submit_error: true,
+        submit_error_msg: "至少要设定一个优先级"
+      });
+    }else{
+      /**至此，个人事件的提交校验全部完成，可以提交至后端 */
+
+      var p_start = p_this.bind2Stamp(p_this.data.cur_event_date,p_this.data.cur_event_start);
+      var p_end = p_this.bind2Stamp(p_this.data.cur_event_date, p_this.data.cur_event_end);
+      
+      
+      wx.request({
+        url: 'http://meeting123.xiaomy.net/api/Event/addNewEvent',
+        header: {
+          'Authorization': app.globalData.skey
+        },
+        method:'GET',
+        data:{
+          'title':p_this.data.cur_event_name,
+          'content':p_this.data.cur_event_detail,
+          'priority':p_this.data.cur_event_prior,
+          'start_time':p_start,
+          'end_time':p_end,
+          'calendar_id':p_this.data.my_calendar_id,
+          'is_remind':0,
+          'is_repeat':p_this.data.cur_event_repeat,
+
+        }
+
+      })
+
+      
+      this.setData({
+        edit_show:false,
+        cur_day:p_this.getDistanceByDate(this.data.cur_event_date.slice(8,10))
+        
+      });
+
+
+    }
+
+  },
 
   handleEventTap:function(e){
     
@@ -504,11 +527,6 @@ Page({
 
       sel_start = this.min2hour(sel_start);
       sel_end = this.min2hour(sel_end);
-
-      
-
-      
-
       
       var prior_index = this.data.inform_card[day_index].event[event_index].priority - 1;
       var prior_key = 'prior_sel['+prior_index+'].checked'
@@ -524,7 +542,7 @@ Page({
         cur_event_end: sel_end,
         cur_event_prior: this.data.inform_card[day_index].event[event_index].priority,
         [prior_key]:true,
-        cur_event_repeat: '',
+        cur_event_repeat: 0,
         cur_event_detail: '',
       });
 
@@ -543,6 +561,10 @@ Page({
 
     var set_month = new Date().getMonth() + 1;
 
+    var six_after = new Date();
+    six_after.setDate(six_after.getDate()+6);
+
+    
     this.setData({
       edit_show:true,
       cur_event_name:'',
@@ -553,12 +575,15 @@ Page({
       'prior_sel[1].checked': false,
       'prior_sel[2].checked': false,
       'prior_sel[3].checked': false,
-      cur_event_repeat: false,
+      cur_event_repeat: 0,
       cur_event_detail: '',
       cur_year: new Date().getFullYear(),
       cur_month: set_month,
       cur_date: new Date().getDate(),
-      cur_event_date: new Date().getFullYear() + '-' + set_month + '-' + new Date().getDate()
+      cur_event_date: new Date().getFullYear() + '-' + set_month + '-' + new Date().getDate(),
+      six_after_year:six_after.getFullYear(),
+      six_after_month:six_after.getMonth()+1,
+      six_after_date:six_after.getDate()
     });
 
     
@@ -615,46 +640,119 @@ Page({
 
   },
 
+  stamp2min:function(stamp){
+    var start_hour = parseInt(stamp.slice(11,13));
+    var start_min = parseInt(stamp.slice(14,16));
+    return start_hour*60 + start_min;
+  },
+
+
   initData(){
-
+    var p_this=this;
     /**在这里发送第一次初始化的网络请求 */
-
-    app.userInfoReadyCallback = res => {
-
-      console.log(res.userInfo);
-
-
-    }
-
+    wx.showToast({
+      title: '获取数据中',
+      icon:'loading',
+      duration:5000
+      
+    });
 
     app.skeyReadyCallback = res =>{
 
 
       var skey = res.data.skey;
+
+      
+
       wx.request({
-        url: 'http://test',
+        url: 'http://meeting123.xiaomy.net/api/Calendar/myCreated',
+        header: {
+          'Authorization': skey
+        },
+        success:res=>{console.log(res);}
+        
+      });
+
+      wx.request({
+        url: 'http://meeting123.xiaomy.net/api/Calendar/myParticipated',
+        header: {
+          'Authorization': skey
+        },
+        success: res => { console.log(res); }
+
+      });
+
+      wx.request({
+        url: 'http://meeting123.xiaomy.net/api/Calendar/myCalendar',
+        header: {
+          'Authorization': skey
+        },
+        success: res => { 
+          p_this.setData({
+            my_calendar_id:res.data.calendarId
+          });
+        }
+
+      });
+
+
+      wx.request({
+        url: 'http://meeting123.xiaomy.net/api/Event/showMyCalendar',
         header: {
           'Authorization': skey
         },
 
         success:function(res){
+          res = res.data;
+          console.log(res);
+         
+          var p_inform_card = [];
+          console.log(res);
+
+          for(var i = 0;i < 10;i++){
+
             
+            
+            var day={
+              day_index:i-3,
+              event:[]
+            };
+          
 
+            var events=[];
 
+            for(var j=0;j<res[i].event.length;j++){
+
+              var add={
+                name:res[i].event[j].title,
+                id:res[i].event[j].event_id,
+                is_repeat: res[i].event[j].is_repeat,
+                content:res[i].event[j].content,
+                display:false,
+                start_time: p_this.stamp2min(res[i].event[j].start_time),
+                end_time: p_this.stamp2min(res[i].event[j].end_time),
+                priority: res[i].event[j].priority
+              }; 
+
+              events.push(add);
+            }
+            day.event = events;
+            p_inform_card.push(day);
+           
+          }
+          wx.hideToast();
+          wx.showToast({
+            title: '数据已同步',
+            icon: 'success'
+          });
+
+          p_this.setData({
+            inform_card:p_inform_card
+          });
 
         }
-
       })
-
-
     }
-
-  
-
-
-
-
-
   },
 
   initDisplay:function(){
@@ -683,6 +781,14 @@ Page({
 
     }
 
+    var set_month = new Date().getMonth() + 1;
+
+    var six_after = new Date();
+    six_after.setDate(six_after.getDate() + 6);
+
+    
+
+
     var set_month = new Date().getMonth()+1;
 
     this.setData({
@@ -695,6 +801,9 @@ Page({
       cur_year: new Date().getFullYear(),
       cur_month: set_month,
       cur_date: new Date().getDate(),
+      six_after_year: six_after.getFullYear(),
+      six_after_month: six_after.getMonth()+1,
+      six_after_date: six_after.getDate(),
       cur_event_date: new Date().getFullYear() +'-'+ set_month + '-'+new Date().getDate(),
       cur_event_name: '',
       cur_event_start: '00:00',
@@ -704,7 +813,7 @@ Page({
       'prior_sel[1].checked': false,
       'prior_sel[2].checked': false,
       'prior_sel[3].checked': false,
-
+      cur_event_repeat:0
 
     });
 

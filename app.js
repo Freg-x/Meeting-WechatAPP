@@ -12,7 +12,7 @@ App({
         // 发送 res.code 到后台换取 openId, sessionKey, unionId
       var p_this = this;
       wx.request({
-        url: 'http://meetingTest.xiaomy.net/login',
+        url: 'http://meeting123.xiaomy.net/login',
         method:'GET',
         data:{
           'code':res.code

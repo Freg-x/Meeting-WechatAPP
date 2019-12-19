@@ -1,6 +1,9 @@
 <!--pages/main_test/main.wxml-->
 
 <view class="page"  bindtouchstart="touchstart" bindtouchend="touchend">
+
+  <mp-toptips msg="{{submit_error_msg}}" type="error" show="{{submit_error}}"></mp-toptips>
+
   <picker bindchange="bindGroupChange" value="{{cur_group}}" range="{{groups}}" range-key="name">
     <view class="change_group">
      {{groups[cur_group].name}}
@@ -89,16 +92,20 @@
   </view>
 
   <mp-dialog title="编辑事件" class="dialog" show="{{edit_show}}" mask="true" mask-closable="true" buttons="{{buttons}}" bindbuttontap="handleDialogTap" >
+
+        
+
+
         <view class="preview_event" style="background-color:{{color_table[cur_event_prior]}}">{{cur_event_name}}</view>
 
         <view class="sep_line"></view>
 
         <scroll-view scroll-Y='true' class="dialog_block">
-        <view class="intro" >事件名称</view><input class="intro_input" bindinput="handleIntroInput" placeholder="简要描述在此"   maxlength="10" value="{{cur_event_name}}"></input>
+        <view class="intro" >事件名称</view><input class="intro_input" bindinput="handleIntroInput" placeholder="简要描述在此"   maxlength="10" value="{{cur_event_name}}" auto-focus="true"></input>
 
 
         <view class="date">事件日期</view>
-        <picker mode="date" bindchange="handleDateChange" value="{{cur_event_date}}" start="{{cur_year+'-'+cur_month+'-'+cur_date}}" end="{{cur_year+'-'+cur_month+'-'+(cur_date+6)}}">
+        <picker mode="date" bindchange="handleDateChange" value="{{cur_event_date}}" start="{{cur_year+'-'+cur_month+'-'+cur_date}}" end="{{six_after_year+'-'+six_after_month+'-'+six_after_date}}">
         <view class="date_picker" >{{cur_event_date}}</view>
         </picker>
 
@@ -123,7 +130,7 @@
         <switch class="repeat_switch" checked="{{cur_event_repeat}}" bindchange="handleRepeatChange"></switch>
         
          <view class="detail">详细描述</view>
-        <textarea class="detail_field" placeholder="选填" maxlength="50" value="{{cur_event_detail}}"></textarea>
+        <textarea class="detail_field" placeholder="选填" maxlength="50" value="{{cur_event_detail}}" bindinput="handleDetailInput"></textarea>
 
          <button class="dialog_add" type="primary" bindtap="handleSubmitEvent">添加</button>
        
