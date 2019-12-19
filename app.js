@@ -10,6 +10,24 @@ App({
     wx.login({
       success: res => {
         // 发送 res.code 到后台换取 openId, sessionKey, unionId
+      var p_this = this;
+      wx.request({
+        url: 'http://meetingTest.xiaomy.net/login',
+        method:'GET',
+        data:{
+          'code':res.code
+        },
+        success:res=>{
+          p_this.globalData.skey = res.data.skey;
+
+          if(this.skeyReadyCallback){
+            this.skeyReadyCallback(res);
+          }
+        }
+      })
+
+
+
       }
     })
     // 获取用户信息
@@ -34,6 +52,7 @@ App({
     })
   },
   globalData: {
-    userInfo: null
+    userInfo: null,
+    skey:null
   }
 })

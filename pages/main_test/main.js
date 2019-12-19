@@ -2,6 +2,8 @@
 
 var util = require("../../utils/util.js");
 
+const app=getApp();
+
 Page({
 
   /**
@@ -19,6 +21,11 @@ Page({
     week_name: [
       '日', '一', '二', '三', '四', '五', '六'
     ],
+
+    cur_year:new Date().getFullYear(),
+    cur_month:new Date().getMonth(),
+    cur_date:new Date().getDate(),
+
 
     //上面十天的信息，前端直接可以运算出来
     display_dates:[],
@@ -131,7 +138,15 @@ Page({
 
       },
       {
-        day_index: -1
+        day_index: -1,
+        event:[{
+        name: '晚上写代码',
+        start_time: 1080,
+        end_time: 1380,
+        display: true,
+        priority: 3,
+
+      }]
 
       },
       {
@@ -178,8 +193,46 @@ Page({
 
       },
       {
-        day_index: 1
+        day_index: 1,
+        event: [
+          {
+            name: 'English',
+            start_time: 0,
+            end_time: 120,
+            display: true,
+            priority: 4
 
+          },
+          {
+            name: '睡觉',
+            start_time: 120,
+            end_time: 540,
+            display: true,
+            priority: 3
+
+          },
+          {
+            name: '计算机图形学',
+            start_time: 600,
+            end_time: 720,
+            display: true,
+            priority: 2
+          },
+          {
+            name: '吃饭',
+            start_time: 740,
+            end_time: 780,
+            display: true,
+            priority: 1
+          },
+          {
+            name: '晚上写代码',
+            start_time: 1080,
+            end_time: 1380,
+            display: true,
+            priority: 3
+          }
+        ]
       },
       {
         day_index: 2
@@ -247,9 +300,18 @@ Page({
         id:'2',
         name:'freakv'
       }
+    ],
+
+    cur_event_name:'',
+    cur_event_date:'',
+    cur_event_start:'',
+    cur_event_end:'',
+    cur_event_prior:0,
+    cur_event_repeat:'',
+    cur_event_detail:'',
+    prior_sel:[
+      { name: '1', checked: false }, { name: '2', checked: false }, { name: '3', checked: false }, { name: '4', checked: false}
     ]
-
-
 
 
 
@@ -258,6 +320,21 @@ Page({
   bindGroupChange(e){
     /**在这里需要发送网络请求，获取当前组的成员信息 */
     /**成功之后进行下面的样式切换 */
+
+    wx.showToast({
+      title: '加载中',
+      icon: 'loading'
+    });
+
+    setTimeout(function () {
+      wx.hideToast();
+      wx.showToast({
+        title: '切换成功',
+        icon: 'success'
+      })
+    }, 200);
+
+    //rt
 
     var sel_index = e.detail.value;
 
@@ -277,25 +354,103 @@ Page({
       this.setData({
         cur_mode:1,
         cur_group:sel_index,
-        'groups[0].name': '我'
+        'groups[0].name': '我',
+        other_inform_card:this.data.inform_card
       });
 
     }
-    
+  },
+
+  bindGroupMemberChange:function(e){
+    var sel_id = e.detail.value;
 
    
+    if(sel_id == 0){
+      this.setData({
+        other_inform_card:this.data.inform_card
+      });
+    }else{
+      //在此处发送网络请求
 
+      wx.showToast({
+        title: '加载中',
+        icon:'loading'
+      });
 
+      setTimeout(function(){
+        wx.hideToast();
+        wx.showToast({
+          title: '切换成功',
+          icon:'success'
+        })
+      },200);
+
+      //rt
+
+      this.setData({
+        //other_inform_card:,
+        cur_member:sel_id
+      });
+    }
 
   },
+
+  handleDateChange:function(e){
+  this.setData({
+    cur_event_date:e.detail.value
+  });
+  },
+
+  handleIntroInput:function(e){
+    this.setData({
+      cur_event_name:e.detail.value
+    });
+  },
+
+  handlePriorChange:function(e){
+
+    this.setData({
+      cur_event_prior:e.detail.value
+    });
+  },
+
+  handleStartChange:function(e){
+    this.setData({
+      cur_event_start:e.detail.value
+    });
+
+  },
+   
+  handleEndChange:function(e){
+    this.setData({
+      cur_event_end:e.detail.value
+    });
+
+  },
+
+  handleRepeatChange:function(e){
+    this.setData(
+      {
+        cur_event_repeat:e.detail.value
+      }
+    )
+  },
+
 
   handleEventTap:function(e){
     
     var id = e.target.id;
 
+    
+
+    if(id.charAt(5)!='-'){
     var day_index = parseInt(id.charAt(5))+3;
     var event_index = parseInt(id.slice(6,id.length));
-
+    }else{
+      var day_index =  parseInt(id.charAt(6)) ;
+      day_index = 3 - day_index;
+      var event_index = parseInt(id.slice(7, id.length));
+    }
     
     //this.data.inform_card[day_index].event[event_index].display
     if(this.data.cur_mode == 0){
@@ -316,10 +471,66 @@ Page({
 
   },
 
-  handleEventLongTap(){
+  min2hour:function(min){
+
+    if(min<10)return '00:0'+min;
+    else if(min<60)return '00:'+min;
+    else {
+      var hour = parseInt(min/60);
+      var minute = min%60;
+
+      if (hour < 10) hour = '0' + hour;
+      if(minute < 10)minute = '0' + minute;
+
+      return hour+':'+minute;
+    }
+
+  },
+
+  handleEventLongPress:function(e){
+
+    if(e.target.id.charAt(5)=='-')return;
 
     if(this.data.cur_mode == 0){
-      this.editEvent();
+
+      var id = e.target.id;
+      var day_index = parseInt(id.charAt(5)) + 3;
+      var event_index = parseInt(id.slice(6, id.length));
+
+      var sel_date = parseInt(id.charAt(5))+this.data.cur_date;
+
+      var sel_start = this.data.inform_card[day_index].event[event_index].start_time;
+      var sel_end = this.data.inform_card[day_index].event[event_index].end_time;
+
+      sel_start = this.min2hour(sel_start);
+      sel_end = this.min2hour(sel_end);
+
+      
+
+      
+
+      
+      var prior_index = this.data.inform_card[day_index].event[event_index].priority - 1;
+      var prior_key = 'prior_sel['+prior_index+'].checked'
+      var set_month = new Date().getMonth() + 1;
+ 
+
+
+      this.setData({
+        edit_show:true,
+        cur_event_name:this.data.inform_card[day_index].event[event_index].name,
+        cur_event_date: new Date().getFullYear() + '-' + set_month + '-' + sel_date,
+        cur_event_start: sel_start,
+        cur_event_end: sel_end,
+        cur_event_prior: this.data.inform_card[day_index].event[event_index].priority,
+        [prior_key]:true,
+        cur_event_repeat: '',
+        cur_event_detail: '',
+      });
+
+
+
+      
 
     }else{
 
@@ -328,10 +539,28 @@ Page({
   },
 
 
-  editEvent:function(){
+  handleAddEvent:function(){
+
+    var set_month = new Date().getMonth() + 1;
+
     this.setData({
-      edit_show:true
+      edit_show:true,
+      cur_event_name:'',
+      cur_event_start:'00:00',
+      cur_event_end:'23:59',
+      cur_event_prior: 0,
+      'prior_sel[0].checked': false,
+      'prior_sel[1].checked': false,
+      'prior_sel[2].checked': false,
+      'prior_sel[3].checked': false,
+      cur_event_repeat: false,
+      cur_event_detail: '',
+      cur_year: new Date().getFullYear(),
+      cur_month: set_month,
+      cur_date: new Date().getDate(),
+      cur_event_date: new Date().getFullYear() + '-' + set_month + '-' + new Date().getDate()
     });
+
     
   },
 
@@ -390,14 +619,45 @@ Page({
 
     /**在这里发送第一次初始化的网络请求 */
 
+    app.userInfoReadyCallback = res => {
+
+      console.log(res.userInfo);
+
+
+    }
+
+
+    app.skeyReadyCallback = res =>{
+
+
+      var skey = res.data.skey;
+      wx.request({
+        url: 'http://test',
+        header: {
+          'Authorization': skey
+        },
+
+        success:function(res){
+            
+
+
+
+        }
+
+      })
+
+
+    }
+
+  
+
+
+
+
+
   },
 
   initDisplay:function(){
-
-
-
-
-
     var tmp = [];
     for(var i=0;i<10;i++){
       var date = new Date();
@@ -423,13 +683,29 @@ Page({
 
     }
 
+    var set_month = new Date().getMonth()+1;
+
     this.setData({
       display_dates :tmp,
       cur_day:0,
       cur_hour: new Date().getHours(),
       cur_min: new Date().getHours() * 60 + new Date().getMinutes(),
       cur_mode:this.data.cur_group==0?0:1,
-      'groups[0].name':this.data.cur_group==0?'在此切换组信息':'我'
+      'groups[0].name':this.data.cur_group==0?'在此切换组信息':'我',
+      cur_year: new Date().getFullYear(),
+      cur_month: set_month,
+      cur_date: new Date().getDate(),
+      cur_event_date: new Date().getFullYear() +'-'+ set_month + '-'+new Date().getDate(),
+      cur_event_name: '',
+      cur_event_start: '00:00',
+      cur_event_end: '23:59',
+      cur_event_prior: 0,
+      'prior_sel[0].checked': false,
+      'prior_sel[1].checked': false,
+      'prior_sel[2].checked': false,
+      'prior_sel[3].checked': false,
+
+
     });
 
   },
@@ -448,7 +724,7 @@ Page({
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function () {
-    console.log("onready");
+    
     
   },
 
@@ -457,8 +733,8 @@ Page({
    */
   onShow: function () {
    
-    console.log("show finish!");
-
+    
+    this.initData();
     this.initDisplay();
 
     /*wx.request({

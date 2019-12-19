@@ -47,7 +47,7 @@
 
     <view class="event_point" wx:for="{{day.event}}" style="top:{{2.33*item.start_time+55}}rpx;background-color:{{color_table[item.priority]}}"></view>
 
-    <view class="event {{item.display?'change_shadow':'event_shadow'}}" wx:for="{{day.event}}" style="top:{{2.33*item.start_time+30}}rpx;background-color:{{color_table[item.priority]}}" bindtap="handleEventTap" id="event{{day.day_index}}{{index}}" hover-class="event_tap" bindlongpress="handleEventLongTap">{{item.name}} </view>
+    <view class="event {{item.display?'change_shadow':'event_shadow'}}" wx:for="{{day.event}}" style="top:{{2.33*item.start_time+30}}rpx;background-color:{{color_table[item.priority]}}" bindtap="handleEventTap" id="event{{day.day_index}}{{index}}" hover-class="event_tap" bindlongpress="handleEventLongPress">{{item.name}} </view>
 
     <view class="line" wx:for="{{day.event}}" style="top:{{2.33*item.start_time+66}}rpx; height:{{item.display?((item.end_time-item.start_time)*2.33-36):0}}rpx; background-color:{{color_table[item.priority]}}"></view>
 
@@ -60,7 +60,7 @@
 
 
 
-    <button class="add_button" type="primary" bindtap="editEvent" wx:if="{{!cur_mode}}">添加事件</button>
+    <button class="add_button" type="primary" bindtap="handleAddEvent" wx:if="{{!cur_mode}}">添加事件</button>
 
    <view class="group_button_box" wx:else>
 
@@ -88,11 +88,47 @@
 
   </view>
 
-  <mp-dialog title="编辑事件" show="{{edit_show}}" mask="true" mask-closable="true" buttons="{{buttons}}" bindbuttontap="handleDialogTap">
-        <view>关于事件的修改信息在此</view>
-        <form>
+  <mp-dialog title="编辑事件" class="dialog" show="{{edit_show}}" mask="true" mask-closable="true" buttons="{{buttons}}" bindbuttontap="handleDialogTap" >
+        <view class="preview_event" style="background-color:{{color_table[cur_event_prior]}}">{{cur_event_name}}</view>
+
+        <view class="sep_line"></view>
+
+        <scroll-view scroll-Y='true' class="dialog_block">
+        <view class="intro" >事件名称</view><input class="intro_input" bindinput="handleIntroInput" placeholder="简要描述在此"   maxlength="10" value="{{cur_event_name}}"></input>
+
+
+        <view class="date">事件日期</view>
+        <picker mode="date" bindchange="handleDateChange" value="{{cur_event_date}}" start="{{cur_year+'-'+cur_month+'-'+cur_date}}" end="{{cur_year+'-'+cur_month+'-'+(cur_date+6)}}">
+        <view class="date_picker" >{{cur_event_date}}</view>
+        </picker>
+
+        <view class="start_time">开始时间</view>
+          <picker mode="time" start="00:00" end="{{cur_event_end}}" value="{{cur_event_start}}" bindchange="handleStartChange">
+          <view class="start_time_picker">{{cur_event_start}}</view>
+          </picker>
+
+        <view class="end_time">结束时间</view>
+        <picker mode="time" start="{{cur_event_start}}" end="23:59" value="{{cur_event_end}}" bindchange="handleEndChange">
+        <view class="end_time_picker">{{cur_event_end}}</view>
+        </picker>
         
-        </form>
+        <view class="priority">优先级</view>
+        <radio-group class="prior_radio" bindchange="handlePriorChange">
+        <radio wx:for-items="{{prior_sel}}" wx:key="name" value="{{item.name}}" checked="{{item.checked}}">
+                    <text>{{item.name}}</text>
+                </radio>
+        </radio-group>
+
+        <view class="repeat" >每周重复</view>
+        <switch class="repeat_switch" checked="{{cur_event_repeat}}" bindchange="handleRepeatChange"></switch>
+        
+         <view class="detail">详细描述</view>
+        <textarea class="detail_field" placeholder="选填" maxlength="50" value="{{cur_event_detail}}"></textarea>
+
+         <button class="dialog_add" type="primary" bindtap="handleSubmitEvent">添加</button>
+       
+        </scroll-view>
+
     </mp-dialog>
 
 

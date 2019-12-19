@@ -53,7 +53,7 @@ top:49rpx;
 height: 38rpx;
 width: 38rpx;
 border-radius: 38rpx;
-background-color: green;
+background-color:green;
 z-index: -1;
 left:516rpx;
 transition:0.5s;
@@ -198,6 +198,159 @@ font-weight: 250;
 
 
 
+.preview_event{
+  position: absolute;
+  width:350rpx;
+  height:60rpx;
+  left:130rpx;
+  font-size: 30rpx;
+  font-weight:250;
+  padding: 8rpx 5rpx 0rpx 20rpx;
+  transition:0.4s;
+  text-align: left;
+  background-color:grey;
+  color: white;
+  box-shadow: 6rpx 6rpx 10rpx 5rpx rgb(200,200,200);
+}
+
+.dialog_block{
+  
+  border-top: 1px solid lightgray;
+  font-size: 30rpx;
+  height: 600rpx;
+  margin-top: 100rpx;
+}
+
+.dialog_block .intro{
+  color: black;
+  position: absolute;
+  top:80rpx;
+
+}
+
+.dialog_block .intro_input{
+position: absolute;
+width:300rpx;
+height: 50rpx;
+border-bottom: 1px solid lightgray;
+top:75rpx;
+left: 160rpx;
+color: black;
+}
+
+.dialog_block .date{
+   color: black;
+  position: absolute;
+  top:180rpx;
+
+}
+
+.dialog_block .date_picker{
+position: absolute;
+
+top:180rpx;
+left:160rpx;
+
+}
+
+.dialog_block .start_time{
+   color: black;
+  position: absolute;
+  top:280rpx;
+
+}
+
+.dialog_block .start_time_picker{
+position: absolute;
+
+top:280rpx;
+left:160rpx;
+}
+
+.dialog_block .end_time{
+   color: black;
+  position: absolute;
+  top:380rpx;
+
+}
+
+.dialog_block .end_time_picker{
+position: absolute;
+
+top:380rpx;
+left:160rpx;
+}
+
+
+.dialog_block .priority{
+
+   color: black;
+  position: absolute;
+  top:480rpx;
+
+
+}
+
+
+.dialog_block .prior_radio{
+  display: flex;
+  justify-content: space-between;
+  position: absolute;
+  top:480rpx;
+  left:160rpx;
+  width: 60%;
+  
+
+}
+
+.dialog_block .repeat{
+
+   color: black;
+  position: absolute;
+  top:580rpx;
+
+
+}
+
+.dialog_block .repeat_switch{
+ 
+  position: absolute;
+  top:570rpx;
+  left:160rpx;
+
+  
+
+}
+
+
+
+.dialog_block .detail{
+ 
+  color: black;
+  position: absolute;
+  top:680rpx;
+
+  
+
+}
+
+
+.dialog_block .detail_field{
+  position:absolute;
+  top:750rpx;
+  border: 1px solid lightgray;
+  width: 90%;
+  height: 200rpx;
+  text-align: left;
+  padding: 20rpx 20rpx 20rpx 20rpx;
+  font-size: 30rpx;
+}
+
+.dialog_block .dialog_add{
+  position: absolute;
+  width: 100%;
+  top:1030rpx;
+}
 
 .main_canvas .space .back_button{
   position:absolute;

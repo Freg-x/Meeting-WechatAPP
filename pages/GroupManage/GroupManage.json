@@ -1,5 +1,9 @@
 {
   "usingComponents": {
-    "mp-dialog": "/weui-miniprogram/dialog/dialog"
-  }
+    "mp-dialog": "/weui-miniprogram/dialog/dialog",
+    "mp-navigation-bar":"/weui-miniprogram/navigation-bar/navigation-bar"
+
+    
+  },
+  "navigationBarTitleText": "组管理"
 }
