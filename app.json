@@ -1,14 +1,14 @@
 {
   "pages": [
     "pages/main_test/main",
+      "pages/AboutUs/About",
     "pages/GroupManage/GroupManage",
     
     
-    
     "pages/index/index",
-    "pages/logs/logs",
+    "pages/logs/logs"
     
-    "pages/AboutUs/About"
+   
   ],
   "window": {
     "backgroundTextStyle": "light",

@@ -8,29 +8,34 @@ App({
 
     // 登录
     wx.login({
+
+      
       success: res => {
+        console.log("log");
         // 发送 res.code 到后台换取 openId, sessionKey, unionId
+      var p_res = res;
+      console.log(res.code);
       var p_this = this;
-      wx.request({
-        url: 'http://meeting123.xiaomy.net/login',
-        method:'GET',
-        data:{
-          'code':res.code
-        },
-        success:res=>{
-          p_this.globalData.skey = res.data.skey;
+      var user_name;
+        wx.request({
+          url: 'http://meeting123.xiaomy.net/login',
+          method: 'GET',
+          data: {
+            'code': p_res.code,
+            'name': '未设置昵称'
+          },
+          success: res => {
+            p_this.globalData.skey = res.data.skey;
 
-          if(this.skeyReadyCallback){
-            this.skeyReadyCallback(res);
+            if (this.skeyReadyCallback) {
+              this.skeyReadyCallback(res);
+            }
           }
-        }
-      })
-
+        });
 
 
       }
-    })
-    // 获取用户信息
+    });
     wx.getSetting({
       success: res => {
         if (res.authSetting['scope.userInfo']) {
@@ -39,6 +44,8 @@ App({
             success: res => {
               // 可以将 res 发送给后台解码出 unionId
               this.globalData.userInfo = res.userInfo
+
+              console.log(res.userInfo);
 
               // 由于 getUserInfo 是网络请求，可能会在 Page.onLoad 之后才返回
               // 所以此处加入 callback 以防止这种情况
@@ -49,7 +56,9 @@ App({
           })
         }
       }
-    })
+    });
+    // 获取用户信息
+ 
   },
   globalData: {
     userInfo: null,

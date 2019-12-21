@@ -1,3 +1,92 @@
-<!--pages/AboutUs/About.wxml-->
+<!--pages/About.wxml-->
 
-<view>施工中</view>
+
+<view class="container">
+ <text class="iconfont {{editOpen?'icon-chenggong2':'icon-xiugai'}} editor" bindtap="editName" bind:touchstart="editon" bind:touchend="editoff" ></text>
+  <view class="userinfo">
+    <button wx:if="{{!hasUserInfo && canIUse}}" open-type="getUserInfo" bindgetuserinfo="getUserInfo"> 获取头像昵称 </button>
+    <block wx:else>
+      <view class="avatarDiv">
+        
+        <image bindtap="bindViewTap" class="userinfo-avatar" src="{{userInfo.avatarUrl}}" mode="cover"></image>
+      </view>
+      <view class="nameDiv">
+        <text class="userinfo-nickname" style="{{editontap?'color:gray':'color:black'}}">{{mynickname}}</text>
+        <input class="editBlock"  bindinput="bindKeyInput" hidden="{{!editOpen}}" placeholder="{{mynickname}}" value="{{mynickname}}" maxlength="9"/>
+       
+      </view>
+    </block>
+  </view>
+
+  <view class="component">
+    
+      <button class="weui-btn" type="primary" bindtap="openDialog" plain="true">功能列表</button>
+    
+
+ <view class="weui-demo-dialog {{istrue ? 'weui-demo-dialog_show' : ''}}">
+          <view class="weui-mask" bindtap="closeDialog"></view>
+          <view class="weui-dialog__wrp" bindtap="closeDialog">
+              <view class="weui-dialog" catchtap="stopEvent">
+                <view class="weui-dialog__hd">
+                  <view class="weui-dialog__title">Meeting使用指南</view>
+                </view>
+                <view class="weui-dialog__bd">
+                  <view class="weui-panel weui-panel_access">
+                     <view class="weui-panel__bd" style="text-align:left">
+                        <view class="weui-media-box weui-media-box_text" >
+                          <view class="weui-media-box__title weui-media-box__title_in-text">事件管理</view>
+                          <view class="weui-media-box__desc">允许您进行事件的添加和删除</view>
+                        </view>
+                        <view class="weui-media-box weui-media-box_text">
+                          <view class="weui-media-box__title weui-media-box__title_in-text">小组管理</view>
+                          <view class="weui-media-box__desc">第二页的内容允许您进行小组的创建、邀请、删除和退出操作，绿色方框代表该组的事件个数</view>
+                    </view>
+                    <view class="weui-media-box weui-media-box_text">
+                          <view class="weui-media-box__title weui-media-box__title_in-text">勿扰模式</view>
+                          <view class="weui-media-box__desc">切换组后可以开启勿扰，此模式下，组事件不会被添加</view>
+                    </view>
+                     <view class="weui-media-box weui-media-box_text">
+                          <view class="weui-media-box__title weui-media-box__title_in-text">创建组事件</view>
+                          <view class="weui-media-box__desc">如果您是组长，切换组后您便可以创建组事件，它会被添加到所有组员的日程中</view>
+                    </view>
+                  </view>
+              </view>
+
+                </view>
+                <view class="weui-dialog__ft">
+                    
+                    <view class="weui-dialog__btn" bindtap="closeDialog">我知道了</view>
+                </view>
+              </view>
+          </view>
+        </view>
+
+
+
+    <view class="groupInfo">
+     
+      <text class="text">Contact us</text>
+      <view class="infoMain">
+        <view class="github info">
+          <text class="iconfont icon-github icons"></text>
+          <view class="words">
+            <view class="des"> 本项目前端现已开源</view>
+            <view class="des"> github：Freg-x/Meeting-WechatAPP</view>
+          </view> 
+        </view>
+        <view class="email info">
+          <text class="iconfont icon-lianxi-A icons"></text>
+          <view class="words">
+            <view class="des_down">开发者微信：FFFreg</view>
+           
+          </view> 
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+<view class="weui-footer weui-footer_fixed-bottom">
+<view class="weui-footer__text">感谢您的使用</view>
+            <view class="weui-footer__text">Copyright © 2019 Powered By Meeting Group</view>
+</view>
+

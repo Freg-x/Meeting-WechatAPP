@@ -182,20 +182,7 @@ Page({
 
 
     //组的部分信息
-    groups:[
-      {
-        id:-1,
-        name:'(在此切换组信息)'
-      },
-      {
-        id:123,
-        name:'JAVA小组'
-      },
-      {
-        id:234,
-        name:'软工小组'
-      }
-    ],
+    groups:[],
 
     //你当前选择的组
     cur_group:0,
@@ -232,6 +219,8 @@ Page({
     cur_event_repeat:0,
     cur_event_detail:'',
     cur_event_id:'',
+    cur_event_index:'',
+    cur_disturb_state:'开启勿扰',
     prior_sel:[
       { name: '1', checked: false }, { name: '2', checked: false }, { name: '3', checked: false }, { name: '4', checked: false}
     ],
@@ -239,6 +228,71 @@ Page({
     submit_error_msg:"",
 
     cur_event_mode:0
+    
+
+  },
+
+  handleGroupButtonTap:function(){
+    var p_this = this;
+    var sel_index =this.data.cur_group;
+    var cur_group_id = this.data.groups[sel_index].id;
+
+    if(!this.data.is_leader&&this.data.cur_disturb_state=='开启勿扰'){
+      wx.showModal({
+        title: '开启勿扰',
+        content: '你确定要对该组开启勿扰模式?',
+        success(res){
+          if(res.confirm){
+            wx.request({
+              url: 'http://meeting123.xiaomy.net/api/Calendar/setNoDisturb',
+              header: {
+                'Authorization': app.globalData.skey
+              },
+              data:{
+                'calendarId':cur_group_id,
+                'disturb': 1
+              },
+              success:res=>{
+                p_this.setData({
+                  cur_disturb_state:'关闭勿扰',
+                  
+                });
+              }
+            })
+
+          }
+        }
+      });
+    } else if (!this.data.is_leader && this.data.cur_disturb_state == '关闭勿扰'){
+      wx.showModal({
+        title: '关闭勿扰',
+        content: '你确定要对该组关闭勿扰模式?',
+        success(res) {
+          if (res.confirm) {
+            wx.request({
+              url: 'http://meeting123.xiaomy.net/api/Calendar/setNoDisturb',
+              header: {
+                'Authorization': app.globalData.skey
+              },
+              data:{
+                'calendarId': cur_group_id,
+                'disturb':0
+              },
+              success: res => {
+                p_this.setData({
+                  cur_disturb_state: '开启勿扰'
+                });
+              }
+            })
+
+          }
+        }
+      });
+    }else if(this.data.is_leader){
+
+
+    }
+    
 
 
   },
@@ -247,44 +301,89 @@ Page({
     /**在这里需要发送网络请求，获取当前组的成员信息 */
     /**成功之后进行下面的样式切换 */
 
+    var p_this=this;
+
     wx.showToast({
       title: '加载中',
       icon: 'loading'
     });
 
-    setTimeout(function () {
-      wx.hideToast();
-      wx.showToast({
-        title: '切换成功',
-        icon: 'success'
-      })
-    }, 200);
-
-    //rt
-
     var sel_index = e.detail.value;
 
-    if(sel_index == 0){
+    wx.request({
+      url: 'http://meeting123.xiaomy.net/api/Calendar/disturbStatus',
+      header: {
+        'Authorization': app.globalData.skey
+      },
+      data:{
+        'calendarId': p_this.data.groups[sel_index].id
+      },
+      success:res=>{
+        var word = res.data?'关闭勿扰':'开启勿扰'
+        this.setData({
+          cur_disturb_state:word
+        });
+      }
+    });
 
-      var group0_name = "groups[0].name";
+    wx.request({
+      url: 'http://meeting123.xiaomy.net/api/Calendar/members',
+      header: {
+        'Authorization': app.globalData.skey
+      },
+      method: 'GET',
+      data: {
+      'calendarId':p_this.data.groups[sel_index].id
+      },
+      success: function (res) {
 
-      this.setData({
-        cur_mode:0,
-        cur_group:0,
-        'groups[0].name':'(在此切换组信息)'
-        
-      })
-    }else{
-      var group0_name = "groups[0].name";
+        var new_group_members = [];
+        var me={
+          id:-1,
+          name:'我'
+        };
+        new_group_members.push(me);
 
-      this.setData({
-        cur_mode:1,
-        cur_group:sel_index,
-        'groups[0].name': '我',
-        other_inform_card:this.data.inform_card
-      });
 
-    }
+        console.log(res);
+
+        if (sel_index == 0) {
+
+          var group0_name = "groups[0].name";
+
+          p_this.setData({
+            cur_mode: 0,
+            cur_group: 0,
+            'groups[0].name': '(在此切换组信息)'
+
+          })
+        } else {
+          var group0_name = "groups[0].name";
+
+          for(var i=0;i<res.data.length;i++){
+            var new_member = {
+              id:res.data[i].userid,
+              name:res.data[i].name
+            }
+            new_group_members.push(new_member);
+          }
+
+          p_this.setData({
+            cur_mode: 1,
+            cur_group: sel_index,
+            'groups[0].name': '我',
+            other_inform_card: p_this.data.inform_card,
+            is_leader: p_this.data.groups[sel_index].leader,
+            cur_group_members:new_group_members
+          });
+
+        }
+      }
+
+    });
+
+
+    
   },
 
   bindGroupMemberChange:function(e){
@@ -401,9 +500,23 @@ Page({
       var event_start = this.data.inform_card[day_index+3].event[i].start_time;
       var event_end = this.data.inform_card[day_index+3].event[i].end_time;
       if(start>event_start&&start<event_end)return false;
-      if(end<event_start&&end<event_end)return false;
+      if(end>event_start&&end<event_end)return false;
 
       console.log(start,end,event_start,event_end);
+    }
+    return true;
+  },
+
+  checkModifyOverlap: function (day_index, start, end,this_index) {
+
+  
+
+    for (var i = 0; i < this.data.inform_card[day_index + 3].event.length; i++) {
+  
+      var event_start = this.data.inform_card[day_index + 3].event[i].start_time;
+      var event_end = this.data.inform_card[day_index + 3].event[i].end_time;
+      if (start > event_start && start < event_end&&i!=this_index) return false;
+
     }
     return true;
   },
@@ -421,6 +534,8 @@ Page({
 
 
     var p_day_index = parseInt(this.data.cur_event_date.slice(8,10)) - this.data.cur_date;
+
+    
 
     console.log(p_day_index);
 
@@ -471,16 +586,30 @@ Page({
           'calendar_id':p_this.data.my_calendar_id,
           'is_remind':0,
           'is_repeat':p_this.data.cur_event_repeat,
+        },
+        success:function(){
+
+          wx.showToast({
+            title: '成功添加',
+            icon: 'loading'
+          });
+
+
+          p_this.setData({
+            edit_show: false,
+            cur_day: p_this.getDistanceByDate(p_this.data.cur_event_date.slice(8, 10))
+
+          });
+
+
+        p_this.sendInitRequest(app.globalData.skey);
+
         }
 
-      })
-
-
-      this.setData({
-        edit_show:false,
-        cur_day:p_this.getDistanceByDate(this.data.cur_event_date.slice(8,10))
-        
       });
+
+
+      
 
 
 
@@ -577,7 +706,8 @@ Page({
         cur_event_repeat: this.data.inform_card[day_index].event[event_index].is_repeat,
         cur_event_detail: this.data.inform_card[day_index].event[event_index].content,
         cur_event_mode:1,
-        cur_event_id: this.data.inform_card[day_index].event[event_index].id
+        cur_event_id: this.data.inform_card[day_index].event[event_index].id,
+        cur_event_index:event_index
       });
 
 
@@ -622,6 +752,102 @@ Page({
 
     
   },
+  handleModifyEvent: function () {
+
+    var start_hour = this.data.cur_event_start.slice(0, 2);
+    var start_minute = this.data.cur_event_start.slice(3, 5);
+    var start_cal = parseInt(start_hour) * 60 + parseInt(start_minute);
+
+    var end_hour = this.data.cur_event_end.slice(0, 2);
+    var end_minute = this.data.cur_event_end.slice(3, 5);
+    var end_cal = parseInt(end_hour) * 60 + parseInt(end_minute);
+
+
+    var p_day_index = parseInt(this.data.cur_event_date.slice(8, 10)) - this.data.cur_date;
+
+    console.log(p_day_index);
+
+
+
+    var p_this = this;
+
+    if (this.data.cur_event_name == "") {
+      this.setData({
+        submit_error: true,
+        submit_error_msg: "事件名称不能为空"
+      });
+    } else if (end_cal - start_cal < 30) {
+      this.setData({
+        submit_error: true,
+        submit_error_msg: "事件长度至少为30分钟"
+      });
+    } else if (!p_this.checkModifyOverlap(p_day_index, start_cal, end_cal,p_this.data.cur_event_index)) {
+      this.setData({
+        submit_error: true,
+        submit_error_msg: "当前指定的时间有其他事件存在"
+      });
+
+    } else {
+      /**至此，个人事件的提交校验全部完成，可以提交至后端 */
+
+      var p_start = p_this.bind2Stamp(p_this.data.cur_event_date, p_this.data.cur_event_start);
+      var p_end = p_this.bind2Stamp(p_this.data.cur_event_date, p_this.data.cur_event_end);
+
+
+      wx.request({
+        url: 'http://meeting123.xiaomy.net/api/Event/modifyEvent',
+        header: {
+          'Authorization': app.globalData.skey
+        },
+        method: 'GET',
+        data: {
+          'title': p_this.data.cur_event_name,
+          'content': p_this.data.cur_event_detail,
+          'priority': parseInt(p_this.data.cur_event_prior),
+          'start_time': p_start,
+          'end_time': p_end,
+          'event_id': parseInt(p_this.data.cur_event_id),
+        },
+        success: function () {
+
+          wx.showToast({
+            title: '成功修改',
+            icon: 'loading'
+          });
+
+
+          p_this.setData({
+            edit_show: false,
+            cur_day: p_this.getDistanceByDate(p_this.data.cur_event_date.slice(8, 10))
+
+          });
+
+          p_this.sendInitRequest(app.globalData.skey);
+
+        }
+
+      });
+
+
+
+
+
+
+
+
+
+
+    }
+
+  
+
+
+
+
+
+
+
+  },
 
   handleDeleteEvent:function(){
     var p_this=this;
@@ -637,8 +863,13 @@ Page({
       success:function(){
         wx.showToast({
           title: '事件已删除',
-          icon: 'success'
+          icon: 'loading'
         });
+
+        p_this.setData({
+          edit_show:false
+        });
+        p_this.sendInitRequest(app.globalData.skey);
       }
 
     })
@@ -706,12 +937,36 @@ Page({
   sendInitRequest:function(skey){
 
     var p_this=this;
+    var renew_groups=[];
+
+    var first_group={
+      id: -1,
+      name: '(在此切换组信息)',
+      leader: false
+    };
+
+    renew_groups.push(first_group);
+
     wx.request({
       url: 'http://meeting123.xiaomy.net/api/Calendar/myCreated',
       header: {
         'Authorization': skey
       },
-      success: res => { console.log(res); }
+      success: res => { 
+        res = res.data;
+        var insert_group;
+        for(var i = 0;i<res.calendarList.length;i++){
+          insert_group={
+            id:res.calendarList[i].calendarId,
+            name:res.calendarList[i].calendarName,
+            leader:true
+          }
+          renew_groups.push(insert_group);
+        }
+        p_this.setData({
+          groups: renew_groups
+        });
+       }
 
     });
 
@@ -720,9 +975,31 @@ Page({
       header: {
         'Authorization': skey
       },
-      success: res => { console.log(res); }
+      success: res => { 
+        res = res.data;
+        var insert_group;
+        for (var i = 0; i < res.calendarList.length; i++) {
+          insert_group = {
+            id: res.calendarList[i].calendarId,
+            name: res.calendarList[i].calendarName,
+            leader: false
+          }
+          renew_groups.push(insert_group);
+          
+        }
+        p_this.setData({
+          groups: renew_groups
+        });
+
+      }
 
     });
+
+
+
+    
+
+    console.log(p_this.data.groups);
 
     wx.request({
       url: 'http://meeting123.xiaomy.net/api/Calendar/myCalendar',
@@ -730,7 +1007,7 @@ Page({
         'Authorization': skey
       },
       success: res => {
-        console.log(res);
+        
         p_this.setData({
           my_calendar_id: res.data.calendarId
         });
@@ -783,10 +1060,7 @@ Page({
 
         }
         wx.hideToast();
-        wx.showToast({
-          title: '数据已同步',
-          icon: 'success'
-        });
+       
 
         p_this.setData({
           inform_card: p_inform_card
@@ -862,7 +1136,7 @@ Page({
       cur_hour: new Date().getHours(),
       cur_min: new Date().getHours() * 60 + new Date().getMinutes(),
       cur_mode:this.data.cur_group==0?0:1,
-      'groups[0].name':this.data.cur_group==0?'在此切换组信息':'我',
+      'groups[0].name':this.data.cur_group==0?'(在此切换组信息)':'我',
       cur_year: new Date().getFullYear(),
       cur_month: set_month,
       cur_date: new Date().getDate(),

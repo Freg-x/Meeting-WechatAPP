@@ -1,7 +1,7 @@
 <!--pages/GroupManage/GroupManage.wxml-->
 <!--button open-type="share">转发</button-->
 
-
+    <mp-toptips msg="{{submit_error_msg}}" type="error" show="{{submit_error}}"></mp-toptips>
     <mp-dialog title="加入组" show="{{join_id==-1?false:true}}" mask="true" mask-closable="true">
         <view>是否加入javaee小组？</view>
         <view>隐私模式</view>
@@ -18,6 +18,7 @@
     <view class="name">{{item.name}}</view>
     <view class="memberCount">当前成员数：{{item.memberCount}}</view>
 
+     
      <i class="iconfont icon-fenxiang1 front_button" id="{{'lead_add'+index}}" bindtap="handleGroupShare"></i>
     <i class="iconfont icon-shanchu3 del_button"  id="{{'lead_del'+index}}" bindtap="handleGroupDisband"></i>
 
@@ -29,12 +30,16 @@
 
   </view>
 
+  <view class="create_group_area" bindtap="handleGroupCreate" hover-class="black">
+  <icon class="iconfont icon-zengjia create_icon"></icon><text>点击创建一个新组</text>
+  </view>
+
   <view class="blank"></view>
 
   <view class="group_des">我加入的组</view>
   <view class="line"></view>
 
-  <view wx:for="{{my_join}}" class="group_card" hover-class="fade">
+  <view wx:for="{{my_join}}" class="group_card" hover-class="fade" >
   <view class="name">{{item.name}}</view>
   <view class="memberCount">当前成员数：{{item.memberCount}}</view>
 
@@ -45,11 +50,22 @@
 
     <i class="iconfont icon-tanhao note"></i>
     <view class="note_number">{{item.eventCount}}</view>
-    
+    </view>
+
+    <view class="disturb {{item.disturb?'show':'hide'}}">
+    <view class="note_word" >勿扰</view>
     </view>
   
   </view>
 
+ <mp-dialog title="创建一个组" class="dialog" show="{{create_show}}" mask="true" mask-closable="true" buttons="{{buttons}}" bindbuttontap="handleDialogTap" >
+    <input type="text" placeholder="在此输入组的名称" maxlength="12" auto-focus="true" class="create_input" bindinput="handleNameInput"></input>
+    </mp-dialog>
+
+ <mp-dialog title="分享" class="dialog" show="{{share_show}}" mask="true" mask-closable="true" buttons="{{share_buttons}}" bindbuttontap="handleShareTap" >
+    <view class="share_view">确认要分享 {{cur_group_name}} 吗？</view>
+    <button open-type="share" type="primary">确认</button>
+    </mp-dialog>
 
 
  

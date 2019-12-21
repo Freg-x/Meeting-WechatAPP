@@ -351,6 +351,11 @@ left:160rpx;
   width: 100%;
   top:1030rpx;
 }
+.dialog_block .dialog_del{
+  position: absolute;
+  width: 100%;
+  top:1140rpx;
+}
 
 .main_canvas .space .back_button{
   position:absolute;

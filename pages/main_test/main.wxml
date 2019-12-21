@@ -72,7 +72,7 @@
      当前成员：{{cur_group_members[cur_member].name}}
     </view>
      </picker>
-  <button class="add_group_button" type="{{is_leader?'primary':'warn'}}" bindtap="groupButtonTap" >{{is_leader?'添加组事件':'勿扰模式'}}</button>
+  <button class="add_group_button" type="{{is_leader?'primary':'warn'}}" bindtap="handleGroupButtonTap" >{{is_leader?'添加组事件':cur_disturb_state}}</button>
 
    </view>
   
@@ -105,7 +105,7 @@
 
 
         <view class="date">事件日期</view>
-        <picker mode="date" bindchange="handleDateChange" value="{{cur_event_date}}" start="{{cur_year+'-'+cur_month+'-'+cur_date}}" end="{{six_after_year+'-'+six_after_month+'-'+six_after_date}}">
+        <picker mode="date" bindchange="handleDateChange" value="{{cur_event_date}}" start="{{cur_year+'-'+cur_month+'-'+cur_date}}" end="{{six_after_year+'-'+six_after_month+'-'+six_after_date}}" disabled="{{cur_event_mode}}">
         <view class="date_picker" >{{cur_event_date}}</view>
         </picker>
 
@@ -133,7 +133,9 @@
         <textarea class="detail_field" placeholder="选填" maxlength="50" value="{{cur_event_detail}}" bindinput="handleDetailInput"></textarea>
 
          <button class="dialog_add" type="primary" bindtap="handleSubmitEvent" wx:if="{{!cur_event_mode}}">添加</button>
-         <button class="dialog_add" type="warn" bindtap="handleDeleteEvent" wx:else>删除该事件</button>
+         <button class="dialog_add" type="primary" bindtap="handleModifyEvent" wx:if="{{cur_event_mode}}">修改</button>
+         <button class="dialog_del" type="warn" bindtap="handleDeleteEvent" wx:if="{{cur_event_mode}}">删除该事件</button>
+         
 
         </scroll-view>
 
