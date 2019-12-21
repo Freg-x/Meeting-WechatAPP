@@ -18,8 +18,8 @@
     <view class="name">{{item.name}}</view>
     <view class="memberCount">当前成员数：{{item.memberCount}}</view>
 
-     <i class="iconfont icon-fenxiang1 front_button" id="{{'lead_add'+index}}" ></i>
-    <i class="iconfont icon-shanchu3 del_button"  id="{{'lead_del'+index}}"></i>
+     <i class="iconfont icon-fenxiang1 front_button" id="{{'lead_add'+index}}" bindtap="handleGroupShare"></i>
+    <i class="iconfont icon-shanchu3 del_button"  id="{{'lead_del'+index}}" bindtap="handleGroupDisband"></i>
 
     <view class="eventCount">
     <i class="iconfont icon-tanhao note"></i>
@@ -38,8 +38,8 @@
   <view class="name">{{item.name}}</view>
   <view class="memberCount">当前成员数：{{item.memberCount}}</view>
 
-<i class="iconfont icon-fenxiang1 front_button" id="{{'lead_add'+index}}"></i>
-    <i class="iconfont icon-jianshao_l end_button"  id="{{'lead_del'+index}}"></i>
+<i class="iconfont icon-fenxiang1 front_button" id="{{'join_add'+index}}" bindtap="handleGroupShare"></i>
+    <i class="iconfont icon-jianshao_l end_button"  id="{{'join_del'+index}}" bindtap="handleGroupDelete"></i>
 
   <view class="eventCount">
 

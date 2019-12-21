@@ -1,4 +1,6 @@
 // pages/GroupManage/GroupManage.js
+var app = getApp();
+
 Page({
 
   /**
@@ -7,33 +9,10 @@ Page({
   data: {
     
     my_create:[
-      {
-        id: 1234,
-        name:'JAVA EE',
-        memberCount:3,
-        eventCount:5
-      },
-      {
-        id:2345,
-        name:'JAVA SE',
-        memberCount: 3,
-        eventCount: 10
-      }
-
+      
     ],
     my_join:[
-      {
-        id:1234,
-        name:'hello',
-        memberCount: 3,
-        eventCount: 1
-      },
-      {
-        id:1234,
-        name:'world',
-        memberCount: 3,
-        eventCount: 1
-      }
+      
     ],
 
     
@@ -63,6 +42,125 @@ Page({
 
   },
 
+  handleGroupDisband:function(e){
+    var id = e.target.id;
+    var index = id.slice(8,id.length+1);
+   var group_id = this.data.my_create[index].id;
+    var group_name = this.data.my_create[index].name;
+    wx.showModal({
+
+      title: '解散组',
+      content: '你确定要解散'+group_name+'？',
+      success(res){
+        if(res.confirm){
+          var skey=app.globalData.skey;
+          console.log(skey);
+          wx.request({
+            method: 'GET',
+            url: 'http://meeting123.xiaomy.net/api/Calendar/disbandCalendar',
+            header: {
+              'Authorization': skey
+            },
+            data:{
+              'calendarId':parseInt(group_id)
+            },
+            success:function(){
+
+            }
+            });
+
+
+
+
+        }
+      }
+    })
+
+  },
+
+  sendInitRequest:function(skey){
+
+    var p_this=this;
+    wx.request({
+      url: 'http://meeting123.xiaomy.net/api/Calendar/myCreated',
+      header: {
+        'Authorization': skey
+      },
+      success: res => {
+        var data = res.data;
+        var new_create_group = [];
+
+        console.log(data);
+
+        for (var i = 0; i < data.calendarList.length; i++) {
+          var group_inform = {
+            'id': data.calendarList[i].calendarId,
+            'name': data.calendarList[i].calendarName,
+            'memberCount': data.memberNum[i],
+            'eventCount': data.eventNum[i]
+          }
+          new_create_group.push(group_inform);
+        }
+        p_this.setData({
+          my_create: new_create_group
+        });
+
+      }
+
+    });
+
+    wx.request({
+      url: 'http://meeting123.xiaomy.net/api/Calendar/myParticipated',
+      header: {
+        'Authorization': skey
+      },
+      success: res => {
+        var data = res.data;
+        var new_create_group = [];
+
+        for (var i = 0; i < data.calendarList.length; i++) {
+          var group_inform = {
+            'id': data.calendarList[i].calendarId,
+            'name': data.calendarList[i].calendarName,
+            'memberCount': data.memberNum[i],
+            'eventCount': data.eventNum[i]
+          }
+          new_create_group.push(group_inform);
+        }
+        p_this.setData({
+          my_join: new_create_group
+        });
+
+        wx.hideToast();
+        wx.showToast({
+          title: '数据已同步',
+          icon: 'success'
+        });
+      }
+    });
+
+  },
+
+  initData:function(){
+
+    wx.showToast({
+      title: '获取数据中',
+      icon: 'loading',
+      duration: 5000
+
+    });
+
+    var p_this=this;
+    var skey;
+
+    if(app.globalData.skey==null){app.skeyReadyCallback = res=>{skey = res.data.skey;this.sendInitRequest(skey);}}
+    else {skey = app.globalData.skey;this.sendInitRequest(skey);}
+ 
+   
+    
+  },
+
+
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
@@ -74,6 +172,8 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
+
+    this.initData();
 
   },
 

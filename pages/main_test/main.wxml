@@ -132,8 +132,9 @@
          <view class="detail">详细描述</view>
         <textarea class="detail_field" placeholder="选填" maxlength="50" value="{{cur_event_detail}}" bindinput="handleDetailInput"></textarea>
 
-         <button class="dialog_add" type="primary" bindtap="handleSubmitEvent">添加</button>
-       
+         <button class="dialog_add" type="primary" bindtap="handleSubmitEvent" wx:if="{{!cur_event_mode}}">添加</button>
+         <button class="dialog_add" type="warn" bindtap="handleDeleteEvent" wx:else>删除该事件</button>
+
         </scroll-view>
 
     </mp-dialog>

@@ -231,12 +231,14 @@ Page({
     cur_event_prior:0,
     cur_event_repeat:0,
     cur_event_detail:'',
+    cur_event_id:'',
     prior_sel:[
       { name: '1', checked: false }, { name: '2', checked: false }, { name: '3', checked: false }, { name: '4', checked: false}
     ],
     submit_error:false,
-    submit_error_msg:""
+    submit_error_msg:"",
 
+    cur_event_mode:0
 
 
   },
@@ -376,7 +378,7 @@ Page({
   getDistanceByDate(future_date){
 
     var tmp = new Date();
-    for(var i = -3;i < 7;i++){
+    for(var i = 0;i < 7;i++){
 
     if(tmp.getDate()==future_date){return i;break;}
     else tmp.setDate(tmp.getDate() + 1);
@@ -393,6 +395,19 @@ Page({
     return date+' '+time;
   },
 
+  checkOverlap:function(day_index,start,end){
+
+    for(var i = 0;i < this.data.inform_card[day_index+3].event.length;i++){
+      var event_start = this.data.inform_card[day_index+3].event[i].start_time;
+      var event_end = this.data.inform_card[day_index+3].event[i].end_time;
+      if(start>event_start&&start<event_end)return false;
+      if(end<event_start&&end<event_end)return false;
+
+      console.log(start,end,event_start,event_end);
+    }
+    return true;
+  },
+
   
   handleSubmitEvent:function(){
 
@@ -403,6 +418,13 @@ Page({
     var end_hour = this.data.cur_event_end.slice(0, 2);
     var end_minute = this.data.cur_event_end.slice(3, 5);
     var end_cal = parseInt(end_hour) * 60 + parseInt(end_minute);
+
+
+    var p_day_index = parseInt(this.data.cur_event_date.slice(8,10)) - this.data.cur_date;
+
+    console.log(p_day_index);
+
+
 
     var p_this = this;
 
@@ -421,6 +443,12 @@ Page({
         submit_error: true,
         submit_error_msg: "至少要设定一个优先级"
       });
+    }else if(!p_this.checkOverlap(p_day_index,start_cal,end_cal)){
+      this.setData({
+        submit_error: true,
+        submit_error_msg: "当前指定的时间有其他事件存在"
+      });
+
     }else{
       /**至此，个人事件的提交校验全部完成，可以提交至后端 */
 
@@ -443,17 +471,21 @@ Page({
           'calendar_id':p_this.data.my_calendar_id,
           'is_remind':0,
           'is_repeat':p_this.data.cur_event_repeat,
-
         }
 
       })
 
-      
+
       this.setData({
         edit_show:false,
         cur_day:p_this.getDistanceByDate(this.data.cur_event_date.slice(8,10))
         
       });
+
+
+
+
+
 
 
     }
@@ -542,19 +574,20 @@ Page({
         cur_event_end: sel_end,
         cur_event_prior: this.data.inform_card[day_index].event[event_index].priority,
         [prior_key]:true,
-        cur_event_repeat: 0,
-        cur_event_detail: '',
+        cur_event_repeat: this.data.inform_card[day_index].event[event_index].is_repeat,
+        cur_event_detail: this.data.inform_card[day_index].event[event_index].content,
+        cur_event_mode:1,
+        cur_event_id: this.data.inform_card[day_index].event[event_index].id
       });
 
-
-
-      
 
     }else{
 
     }
 
   },
+
+
 
 
   handleAddEvent:function(){
@@ -583,10 +616,34 @@ Page({
       cur_event_date: new Date().getFullYear() + '-' + set_month + '-' + new Date().getDate(),
       six_after_year:six_after.getFullYear(),
       six_after_month:six_after.getMonth()+1,
-      six_after_date:six_after.getDate()
+      six_after_date:six_after.getDate(),
+      cur_event_mode:0
     });
 
     
+  },
+
+  handleDeleteEvent:function(){
+    var p_this=this;
+    wx.request({
+      url: 'http://meeting123.xiaomy.net/api/Event/deleteEvent',
+      header: {
+        'Authorization': app.globalData.skey
+      },
+      method: 'GET',
+      data: {
+        'event_id':p_this.data.cur_event_id
+      },
+      success:function(){
+        wx.showToast({
+          title: '事件已删除',
+          icon: 'success'
+        });
+      }
+
+    })
+
+
   },
 
   moveToCurrent:function(){
@@ -646,6 +703,104 @@ Page({
     return start_hour*60 + start_min;
   },
 
+  sendInitRequest:function(skey){
+
+    var p_this=this;
+    wx.request({
+      url: 'http://meeting123.xiaomy.net/api/Calendar/myCreated',
+      header: {
+        'Authorization': skey
+      },
+      success: res => { console.log(res); }
+
+    });
+
+    wx.request({
+      url: 'http://meeting123.xiaomy.net/api/Calendar/myParticipated',
+      header: {
+        'Authorization': skey
+      },
+      success: res => { console.log(res); }
+
+    });
+
+    wx.request({
+      url: 'http://meeting123.xiaomy.net/api/Calendar/myCalendar',
+      header: {
+        'Authorization': skey
+      },
+      success: res => {
+        console.log(res);
+        p_this.setData({
+          my_calendar_id: res.data.calendarId
+        });
+      }
+
+    });
+
+
+    wx.request({
+      url: 'http://meeting123.xiaomy.net/api/Event/showMyCalendar',
+      header: {
+        'Authorization': skey
+      },
+
+      success: function (res) {
+        res = res.data;
+        console.log(res);
+
+        var p_inform_card = [];
+   
+        for (var i = 0; i < 10; i++) {
+
+
+
+          var day = {
+            day_index: i - 3,
+            event: []
+          };
+
+
+          var events = [];
+
+          for (var j = 0; j < res[i].event.length; j++) {
+
+            var add = {
+              name: res[i].event[j].title,
+              id: res[i].event[j].event_id,
+              is_repeat: res[i].event[j].is_repeat,
+              content: res[i].event[j].content,
+              display: false,
+              start_time: p_this.stamp2min(res[i].event[j].start_time),
+              end_time: p_this.stamp2min(res[i].event[j].end_time),
+              priority: res[i].event[j].priority
+            };
+
+            events.push(add);
+          }
+          day.event = events;
+          p_inform_card.push(day);
+
+        }
+        wx.hideToast();
+        wx.showToast({
+          title: '数据已同步',
+          icon: 'success'
+        });
+
+        p_this.setData({
+          inform_card: p_inform_card
+        });
+
+      }
+    })
+
+
+
+
+
+  },
+
 
   initData(){
     var p_this=this;
@@ -657,102 +812,12 @@ Page({
       
     });
 
+    if(app.globalData.skey==null){
     app.skeyReadyCallback = res =>{
-
-
       var skey = res.data.skey;
-
-      
-
-      wx.request({
-        url: 'http://meeting123.xiaomy.net/api/Calendar/myCreated',
-        header: {
-          'Authorization': skey
-        },
-        success:res=>{console.log(res);}
-        
-      });
-
-      wx.request({
-        url: 'http://meeting123.xiaomy.net/api/Calendar/myParticipated',
-        header: {
-          'Authorization': skey
-        },
-        success: res => { console.log(res); }
-
-      });
-
-      wx.request({
-        url: 'http://meeting123.xiaomy.net/api/Calendar/myCalendar',
-        header: {
-          'Authorization': skey
-        },
-        success: res => { 
-          p_this.setData({
-            my_calendar_id:res.data.calendarId
-          });
-        }
-
-      });
-
-
-      wx.request({
-        url: 'http://meeting123.xiaomy.net/api/Event/showMyCalendar',
-        header: {
-          'Authorization': skey
-        },
-
-        success:function(res){
-          res = res.data;
-          console.log(res);
-         
-          var p_inform_card = [];
-          console.log(res);
-
-          for(var i = 0;i < 10;i++){
-
-            
-            
-            var day={
-              day_index:i-3,
-              event:[]
-            };
-          
-
-            var events=[];
-
-            for(var j=0;j<res[i].event.length;j++){
-
-              var add={
-                name:res[i].event[j].title,
-                id:res[i].event[j].event_id,
-                is_repeat: res[i].event[j].is_repeat,
-                content:res[i].event[j].content,
-                display:false,
-                start_time: p_this.stamp2min(res[i].event[j].start_time),
-                end_time: p_this.stamp2min(res[i].event[j].end_time),
-                priority: res[i].event[j].priority
-              }; 
-
-              events.push(add);
-            }
-            day.event = events;
-            p_inform_card.push(day);
-           
-          }
-          wx.hideToast();
-          wx.showToast({
-            title: '数据已同步',
-            icon: 'success'
-          });
-
-          p_this.setData({
-            inform_card:p_inform_card
-          });
-
-        }
-      })
+      p_this.sendInitRequest(skey);
     }
+    } else { p_this.sendInitRequest(app.globalData.skey);}
   },
 
   initDisplay:function(){
