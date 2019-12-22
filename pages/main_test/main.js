@@ -40,11 +40,10 @@ Page({
       { number: 12, value: 'AM' }, { number: 1, value: 'PM' }, { number: 2, value: 'PM' }, { number: 3, value: 'PM' },
       { number: 4, value: 'PM' }, { number: 5, value: 'PM' }, { number: 6, value: 'PM' }, { number: 7, value: 'PM' },
       { number: 8, value: 'PM' }, { number: 9, value: 'PM' }, { number: 10, value: 'PM' }, { number: 11, value: 'PM' },
-      
-
     ],
 
     buttons: [{ text: '关闭' }],
+    suggest_buttons:[{text:'返回'}],
 
     //事件颜色的选项
     color_table:[
@@ -68,54 +67,12 @@ Page({
       },
       {
         day_index: 0,
-        event:[
-          {
-            name : 'English',
-            start_time:0,
-            end_time:120,
-            display:true,
-            priority:4
-            
-          },
-          {
-            name: '睡觉',
-            start_time: 120,
-            end_time: 540,
-            display: true,
-            priority: 4
-
-          },
-          {
-            name : '别人计算机图形学',
-            start_time: 600,
-            end_time: 720,
-            display: true,
-            priority:3
-          },
-          {
-            name: '别人吃饭',
-            start_time: 740,
-            end_time: 780,
-            display: true,
-            priority: 4
-          },
-          {
-            name: '晚上别人写代码',
-            start_time: 1080,
-            end_time: 1380,
-            display: true,
-            priority:3
-          }
-        ],
-      
       },
       {
         day_index: 1
-       
       },   
       {
         day_index: 2
-        
       },
       {
         day_index: 3
@@ -143,17 +100,13 @@ Page({
       },
       {
         day_index: -1,
-        event:[]
-
       },
       {
         day_index: 0,
-        event: [],
 
       },
       {
         day_index: 1,
-        event: []
       },
       {
         day_index: 2
@@ -179,6 +132,7 @@ Page({
     back_button_color:'rgb(200,200,200)',
     //控制信息框的显示
     edit_show:false,
+    suggest_show:false,
 
 
     //组的部分信息
@@ -200,13 +154,6 @@ Page({
       {
         id:-1,
         name:'我'
-      },
-      {
-        id:'1',
-        name:'freakx'
-      },{
-        id:'2',
-        name:'freakv'
       }
     ],
 
@@ -221,15 +168,17 @@ Page({
     cur_event_id:'',
     cur_event_index:'',
     cur_disturb_state:'开启勿扰',
+    suggest_length:'',
     prior_sel:[
       { name: '1', checked: false }, { name: '2', checked: false }, { name: '3', checked: false }, { name: '4', checked: false}
     ],
     submit_error:false,
     submit_error_msg:"",
 
-    cur_event_mode:0
-    
+    cur_event_mode:0,
 
+    suggest_period:[
+    ]
   },
 
   handleGroupButtonTap:function(){
@@ -290,6 +239,11 @@ Page({
       });
     }else if(this.data.is_leader){
 
+      p_this.setData({
+        edit_show:true,
+        cur_event_mode:0
+       
+      });
 
     }
     
@@ -309,6 +263,9 @@ Page({
     });
 
     var sel_index = e.detail.value;
+    
+
+    if(sel_index!=0){
 
     wx.request({
       url: 'http://meeting123.xiaomy.net/api/Calendar/disturbStatus',
@@ -325,6 +282,7 @@ Page({
         });
       }
     });
+    }
 
     wx.request({
       url: 'http://meeting123.xiaomy.net/api/Calendar/members',
@@ -344,9 +302,6 @@ Page({
         };
         new_group_members.push(me);
 
-
-        console.log(res);
-
         if (sel_index == 0) {
 
           var group0_name = "groups[0].name";
@@ -354,7 +309,7 @@ Page({
           p_this.setData({
             cur_mode: 0,
             cur_group: 0,
-            'groups[0].name': '(在此切换组信息)'
+            'groups[0].name': '我'
 
           })
         } else {
@@ -368,13 +323,17 @@ Page({
             new_group_members.push(new_member);
           }
 
+          console.log(p_this.data.groups[sel_index].id);
+
           p_this.setData({
             cur_mode: 1,
             cur_group: sel_index,
             'groups[0].name': '我',
             other_inform_card: p_this.data.inform_card,
             is_leader: p_this.data.groups[sel_index].leader,
-            cur_group_members:new_group_members
+            cur_group_members:new_group_members,
+            cur_group_id: p_this.data.groups[sel_index].id,
+            cur_member:0
           });
 
         }
@@ -388,33 +347,75 @@ Page({
 
   bindGroupMemberChange:function(e){
     var sel_id = e.detail.value;
-
+    var p_this = this;
    
     if(sel_id == 0){
       this.setData({
-        other_inform_card:this.data.inform_card
+        other_inform_card:this.data.inform_card,
+        cur_member:0
       });
     }else{
       //在此处发送网络请求
-
       wx.showToast({
-        title: '加载中',
+        title: '切换中',
         icon:'loading'
       });
 
-      setTimeout(function(){
-        wx.hideToast();
-        wx.showToast({
-          title: '切换成功',
-          icon:'success'
-        })
-      },200);
+      var p_user_id = this.data.cur_group_members[sel_id].id;
 
-      //rt
+      console.log(this.data.cur_group_members);
 
-      this.setData({
-        //other_inform_card:,
-        cur_member:sel_id
+      wx.request({
+        url: 'http://meeting123.xiaomy.net/api/Event/showOthersEvent',
+        header: {
+          'Authorization': app.globalData.skey
+        },
+        method: 'GET',
+        data:{
+          'userid':p_user_id
+        },
+        success:res=>{
+          console.log(res);
+          res = res.data;
+          var p_inform_card = [];
+
+          for (var i = 0; i < 10; i++) {
+            var day = {
+              day_index: i - 3,
+              event: []
+            };
+
+
+            var events = [];
+
+            for (var j = 0; j < res[i].event.length; j++) {
+
+              var add = {
+                name: res[i].event[j].title,
+                id: res[i].event[j].event_id,
+                is_repeat: res[i].event[j].is_repeat,
+                content: res[i].event[j].content,
+                display: false,
+                start_time: p_this.stamp2min(res[i].event[j].start_time),
+                end_time: p_this.stamp2min(res[i].event[j].end_time),
+                priority: res[i].event[j].priority
+              };
+
+              events.push(add);
+            }
+            day.event = events;
+            p_inform_card.push(day);
+
+          }
+          wx.hideToast();
+
+
+          p_this.setData({
+            other_inform_card: p_inform_card,
+            cur_member:sel_id
+          });
+        }
+        
       });
     }
 
@@ -424,6 +425,80 @@ Page({
   this.setData({
     cur_event_date:e.detail.value
   });
+  },
+
+  handleSuggest(){
+
+    if(this.data.cur_mode==1){
+
+      this.setData({
+        edit_show:false,
+        suggest_show:true,
+        suggest_length:''
+      });
+
+    }
+
+  },
+
+  handleSuggestInput(e){
+    this.setData({
+      suggest_length:e.detail.value
+    });
+  },
+
+  handleSuggestSubmit(){
+    var p_this = this;
+    if(this.data.suggest_length<30||this.data.suggest_length>1440){
+      this.setData({
+        submit_error:true,
+        submit_error_msg:'不合理的事件长度'
+      });
+    }else{
+      wx.request({
+        url: 'http://meeting123.xiaomy.net/api/Event/recommend',
+        header: {
+          'Authorization': app.globalData.skey
+        },
+        data:{
+          'calendarId':p_this.data.cur_group_id,
+          'duration':p_this.data.suggest_length
+        },
+        success:res=>{
+
+          res=res.data;
+          var p_suggest_period = [];
+          for(var i=0;i<res.length;i++){
+            var new_period = {
+              date:res[i].start_time.slice(0,10),
+              start_time:res[i].start_time.slice(11,16),
+              end_time: res[i].end_time.slice(11, 16)
+            }
+            p_suggest_period.push(new_period);
+          }
+          p_this.setData({
+            suggest_period:p_suggest_period
+          });
+        }
+      });
+
+    }
+
+  },
+
+  handleUseSuggest:function(e){
+    var use_id = e.target.id.charAt(7);
+    var use_date = this.data.suggest_period[use_id].date;
+    var use_start = this.data.suggest_period[use_id].start_time;
+    var use_end = this.data.suggest_period[use_id].end_time;
+
+    this.setData({
+      edit_show:true,
+      suggest_show:false,
+      cur_event_date:use_date,
+      cur_event_start:use_start,
+      cur_event_end:use_end
+    })
   },
 
   handleIntroInput:function(e){
@@ -494,26 +569,24 @@ Page({
     return date+' '+time;
   },
 
+ 
+
   checkOverlap:function(day_index,start,end){
 
     for(var i = 0;i < this.data.inform_card[day_index+3].event.length;i++){
       var event_start = this.data.inform_card[day_index+3].event[i].start_time;
       var event_end = this.data.inform_card[day_index+3].event[i].end_time;
       if(start>event_start&&start<event_end)return false;
-      if(end>event_start&&end<event_end)return false;
-
-      console.log(start,end,event_start,event_end);
+      if(end>event_start&&end<event_end)return false;  
     }
     return true;
   },
 
+  /*加入下面函数的原因是，在修改事件时，不用检查它和之前的它自己自己是否重叠*/ 
+
   checkModifyOverlap: function (day_index, start, end,this_index) {
-
-  
-
     for (var i = 0; i < this.data.inform_card[day_index + 3].event.length; i++) {
-  
-      var event_start = this.data.inform_card[day_index + 3].event[i].start_time;
+    var event_start = this.data.inform_card[day_index + 3].event[i].start_time;
       var event_end = this.data.inform_card[day_index + 3].event[i].end_time;
       if (start > event_start && start < event_end&&i!=this_index) return false;
 
@@ -535,12 +608,7 @@ Page({
 
     var p_day_index = parseInt(this.data.cur_event_date.slice(8,10)) - this.data.cur_date;
 
-    
-
-    console.log(p_day_index);
-
-
-
+ 
     var p_this = this;
 
     if(this.data.cur_event_name == ""){
@@ -564,7 +632,7 @@ Page({
         submit_error_msg: "当前指定的时间有其他事件存在"
       });
 
-    }else{
+    }else if(p_this.data.cur_mode==0){
       /**至此，个人事件的提交校验全部完成，可以提交至后端 */
 
       var p_start = p_this.bind2Stamp(p_this.data.cur_event_date,p_this.data.cur_event_start);
@@ -594,32 +662,168 @@ Page({
             icon: 'loading'
           });
 
-
           p_this.setData({
             edit_show: false,
             cur_day: p_this.getDistanceByDate(p_this.data.cur_event_date.slice(8, 10))
 
           });
-
-
         p_this.sendInitRequest(app.globalData.skey);
-
         }
-
       });
+    }else if(p_this.data.cur_mode == 1){
 
+      console.log("添加组事件");
 
-      
+      var p_start = p_this.bind2Stamp(p_this.data.cur_event_date, p_this.data.cur_event_start);
+      var p_end = p_this.bind2Stamp(p_this.data.cur_event_date, p_this.data.cur_event_end);
 
+      wx.request({
+        url: 'http://meeting123.xiaomy.net/api/Event/addGroupEvent',
+        header: {
+          'Authorization': app.globalData.skey
+        },
+        method: 'GET',
+        data: {
+          'title': p_this.data.cur_event_name,
+          'content': p_this.data.cur_event_detail,
+          'priority': p_this.data.cur_event_prior,
+          'start_time': p_start,
+          'end_time': p_end,
+          'calendar_id': p_this.data.cur_group_id,
+          'is_remind': 0,
+          'is_repeat': p_this.data.cur_event_repeat,
+        },
+        success: function (res) {
 
+          console.log(res);
 
+          wx.showToast({
+            title: '成功添加',
+            icon: 'loading'
+          });
 
-
-
+          p_this.setData({
+            edit_show: false,
+            cur_day: p_this.getDistanceByDate(p_this.data.cur_event_date.slice(8, 10))
+          });
+        
+        
+          p_this.sendInitGroupChange(p_this.data.cur_group_members[p_this.data.cur_member].id);
+          
+        }
+      });
 
     }
 
   },
+
+  sendInitGroupChange:function(member_id){
+
+    var p_this =this;
+    
+
+    if(member_id==-1){
+      wx.request({
+        url: 'http://meeting123.xiaomy.net/api/Event/showMyCalendar',
+        header: {
+          'Authorization': app.globalData.skey
+        },
+        success: function (res) {
+          res = res.data;
+          var p_inform_card = [];
+
+          for (var i = 0; i < 10; i++) {
+            var day = {
+              day_index: i - 3,
+              event: []
+            };
+            var events = [];
+            for (var j = 0; j < res[i].event.length; j++) {
+
+              var add = {
+                name: res[i].event[j].title,
+                id: res[i].event[j].event_id,
+                is_repeat: res[i].event[j].is_repeat,
+                content: res[i].event[j].content,
+                display: false,
+                start_time: p_this.stamp2min(res[i].event[j].start_time),
+                end_time: p_this.stamp2min(res[i].event[j].end_time),
+                priority: res[i].event[j].priority
+              };
+              events.push(add);
+            }
+            day.event = events;
+            p_inform_card.push(day);
+
+          }
+          wx.hideToast();
+          p_this.setData({
+            inform_card: p_inform_card,
+            other_inform_card:p_inform_card
+          });
+        }
+      })
+
+    }else{
+
+
+    wx.request({
+      url: 'http://meeting123.xiaomy.net/api/Event/showOthersEvent',
+      header: {
+        'Authorization': app.globalData.skey
+      },
+      method: 'GET',
+      data: {
+        'userid': member_id
+      },
+      success: res => {
+        res = res.data;
+        var p_inform_card = [];
+
+        for (var i = 0; i < 10; i++) {
+          var day = {
+            day_index: i - 3,
+            event: []
+          };
+
+
+          var events = [];
+
+          for (var j = 0; j < res[i].event.length; j++) {
+
+            var add = {
+              name: res[i].event[j].title,
+              id: res[i].event[j].event_id,
+              is_repeat: res[i].event[j].is_repeat,
+              content: res[i].event[j].content,
+              display: false,
+              start_time: p_this.stamp2min(res[i].event[j].start_time),
+              end_time: p_this.stamp2min(res[i].event[j].end_time),
+              priority: res[i].event[j].priority
+            };
+
+            events.push(add);
+          }
+          day.event = events;
+          p_inform_card.push(day);
+
+        }
+        wx.hideToast();
+
+
+        p_this.setData({
+          other_inform_card: p_inform_card,
+        });
+  
+  }
+  });
+  }
+  },
+
+
+
+
+
 
   handleEventTap:function(e){
     
@@ -727,6 +931,8 @@ Page({
     var six_after = new Date();
     six_after.setDate(six_after.getDate()+6);
 
+   
+
     
     this.setData({
       edit_show:true,
@@ -764,10 +970,6 @@ Page({
 
 
     var p_day_index = parseInt(this.data.cur_event_date.slice(8, 10)) - this.data.cur_date;
-
-    console.log(p_day_index);
-
-
 
     var p_this = this;
 
@@ -829,24 +1031,7 @@ Page({
       });
 
 
-
-
-
-
-
-
-
-
     }
-
-  
-
-
-
-
-
-
-
   },
 
   handleDeleteEvent:function(){
@@ -906,6 +1091,14 @@ Page({
     );
   },
 
+  handleSuggestTap: function (e) {
+    this.setData(
+      {
+        edit_show: true,
+        suggest_show:false
+      }
+    );
+  },
 
 
   touchstart:function(e){
@@ -938,10 +1131,12 @@ Page({
 
     var p_this=this;
     var renew_groups=[];
+    var p_name='我';
+    if (this.data.cur_mode == 0) p_name ="(在此切换组信息)";
 
     var first_group={
       id: -1,
-      name: '(在此切换组信息)',
+      name: p_name,
       leader: false
     };
 
@@ -995,12 +1190,6 @@ Page({
 
     });
 
-
-
-    
-
-    console.log(p_this.data.groups);
-
     wx.request({
       url: 'http://meeting123.xiaomy.net/api/Calendar/myCalendar',
       header: {
@@ -1024,8 +1213,6 @@ Page({
 
       success: function (res) {
         res = res.data;
-        console.log(res);
-
         var p_inform_card = [];
    
         for (var i = 0; i < 10; i++) {
@@ -1158,6 +1345,23 @@ Page({
 
   },
 
+  initName:function(){
+
+    setTimeout(function(){
+      wx.request({
+        url: 'http://meeting123.xiaomy.net/api/user/changeName',
+        header: {
+          'Authorization': app.globalData.skey
+        },
+        data: {
+          'userName': app.globalData.userInfo.nickName
+        }
+      });
+
+    },5000);
+
+  },
+
   /**
    * 生命周期函数--监听页面加载
    */
@@ -1180,26 +1384,18 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
+
+    
    
     
     this.initData();
     this.initDisplay();
-
-    /*wx.request({
-      url: 'http://meeting123.xiaomy.net/test',
-      method:'GET',
-      data:{
-      title:13
-
-      },
-      success(res){console.log(res)
-      }
-    });*/
-
-
+    this.initName();
 
     var p_this = this;
     var last_x = 0;
+
+    
 
     wx.onAccelerometerChange(function (res) {
 

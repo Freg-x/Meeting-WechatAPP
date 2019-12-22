@@ -49,6 +49,13 @@ Page({
     })  
   },
   editName:function(){
+
+    if(this.data.editOpen){
+
+    }
+
+
+
     this.setData({
       editOpen:!this.data.editOpen,
     })

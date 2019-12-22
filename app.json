@@ -1,9 +1,9 @@
 {
   "pages": [
-    "pages/main_test/main",
-      "pages/AboutUs/About",
-    "pages/GroupManage/GroupManage",
     
+    "pages/main_test/main",
+     "pages/AboutUs/About",
+    "pages/GroupManage/GroupManage",
     
     "pages/index/index",
     "pages/logs/logs"

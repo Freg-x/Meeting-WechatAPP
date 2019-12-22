@@ -96,12 +96,12 @@
         
 
 
-        <view class="preview_event" style="background-color:{{color_table[cur_event_prior]}}">{{cur_event_name}}</view>
+        <view class="preview_event" style="background-color:{{color_table[cur_event_prior]}}" hover-class="event_tap" bindtap="handleSuggest">{{cur_event_name}}</view>
 
         <view class="sep_line"></view>
 
         <scroll-view scroll-Y='true' class="dialog_block">
-        <view class="intro" >事件名称</view><input class="intro_input" bindinput="handleIntroInput" placeholder="简要描述在此"   maxlength="10" value="{{cur_event_name}}" auto-focus="true"></input>
+        <view class="intro" >事件名称</view><input class="intro_input" bindinput="handleIntroInput" placeholder="{{cur_mode==0?'事件描述在此':'点击上方获取推荐时间'}}"   maxlength="10" value="{{cur_event_name}}" auto-focus="true"></input>
 
 
         <view class="date">事件日期</view>
@@ -139,6 +139,16 @@
 
         </scroll-view>
 
+    </mp-dialog>
+
+    <mp-dialog  title="空闲时间段" class="dialog" show="{{suggest_show}}" mask="true" mask-closable="false" buttons="{{suggest_buttons}}" bindbuttontap="handleSuggestTap">
+    <input placeholder="事件持续时间(min)" class="suggest_input" value="{{suggest_length}}" bindinput="handleSuggestInput"></input>
+
+    <view wx:for="{{suggest_period}}" class="suggest_card" hover-class="event_tap" >
+    <view bindtap="handleUseSuggest" id="suggest{{index}}">{{item.date}} {{item.start_time}}-{{item.end_time}}</view>
+    
+    </view>
+    <button type="primary" bindtap="handleSuggestSubmit" >获取推荐时间段</button>
     </mp-dialog>
 
 

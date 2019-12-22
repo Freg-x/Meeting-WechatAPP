@@ -2,7 +2,7 @@
 
 
 <view class="container">
- <text class="iconfont {{editOpen?'icon-chenggong2':'icon-xiugai'}} editor" bindtap="editName" bind:touchstart="editon" bind:touchend="editoff" ></text>
+ <!--text class="iconfont {{editOpen?'icon-chenggong2':'icon-xiugai'}} editor" bindtap="editName" bind:touchstart="editon" bind:touchend="editoff" ></text-->
   <view class="userinfo">
     <button wx:if="{{!hasUserInfo && canIUse}}" open-type="getUserInfo" bindgetuserinfo="getUserInfo"> 获取头像昵称 </button>
     <block wx:else>
@@ -39,7 +39,7 @@
                         </view>
                         <view class="weui-media-box weui-media-box_text">
                           <view class="weui-media-box__title weui-media-box__title_in-text">小组管理</view>
-                          <view class="weui-media-box__desc">第二页的内容允许您进行小组的创建、邀请、删除和退出操作，绿色方框代表该组的事件个数</view>
+                          <view class="weui-media-box__desc">第二页的内容允许您进行小组的创建、邀请、删除和退出操作</view>
                     </view>
                     <view class="weui-media-box weui-media-box_text">
                           <view class="weui-media-box__title weui-media-box__title_in-text">勿扰模式</view>
@@ -47,7 +47,7 @@
                     </view>
                      <view class="weui-media-box weui-media-box_text">
                           <view class="weui-media-box__title weui-media-box__title_in-text">创建组事件</view>
-                          <view class="weui-media-box__desc">如果您是组长，切换组后您便可以创建组事件，它会被添加到所有组员的日程中</view>
+                          <view class="weui-media-box__desc">对于组长，切换组后便可以创建组事件，它会被添加到所有组员的日程中</view>
                     </view>
                   </view>
               </view>

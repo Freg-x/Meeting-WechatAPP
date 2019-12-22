@@ -290,13 +290,15 @@ Page({
         var data = res.data;
         var new_join_group = [];
 
+        console.log(data);
+
         for (var i = 0; i < data.calendarList.length; i++) {
           var group_inform = {
             'id': data.calendarList[i].calendarId,
             'name': data.calendarList[i].calendarName,
             'memberCount': data.memberNum[i],
             'eventCount': data.eventNum[i],
-            'disturb': false
+            'disturb': data.disturbModes[i]
           }
           new_join_group.push(group_inform);
         }
@@ -328,6 +330,22 @@ Page({
    
     
   },
+  initName: function () {
+
+    setTimeout(function () {
+      wx.request({
+        url: 'http://meeting123.xiaomy.net/api/user/changeName',
+        header: {
+          'Authorization': app.globalData.skey
+        },
+        data: {
+          'userName': app.globalData.userInfo.nickName
+        }
+      });
+
+    }, 5000);
+
+  },
 
 
 
@@ -344,7 +362,7 @@ Page({
   onShow: function () {
 
     this.initData();
-
+    this.initName();
   },
 
   /**
